@@ -19,6 +19,7 @@ Route::middleware(['auth'])->group(function () {
     // Dashboard Admin
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
+    Route::get('/admin/anggota', [AdminController::class, 'listAnggota'])->name('admin.anggota.index');
 
     // Dashboard User
     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');

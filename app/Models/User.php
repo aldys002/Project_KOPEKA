@@ -39,13 +39,13 @@ class User extends Authenticatable
         return 'nipp';
     }
 
-    public function simpanan(): HasMany
-    {
-        return $this->hasMany(Simpanan::class, 'nipp', 'nipp');
-    }
+    //public function simpanan(): HasMany
+    //{
+     //   return $this->hasMany(Simpanan::class, 'nipp', 'nipp');
+    //}
 
-    public function hutang(): HasMany
-    {
-        return $this->hasMany(Hutang::class, 'nipp', 'nipp');
-    }
+    //public function hutang(): HasMany
+    //{
+    //    return $this->hasMany(Hutang::class, 'nipp', 'nipp');
+    //}
 }

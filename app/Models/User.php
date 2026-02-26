@@ -17,11 +17,12 @@ class User extends Authenticatable
 
     // 2. Update fillable agar bisa menyimpan NIPP dan NIK dari Excel
     protected $fillable = [
-        'nipp',
-        'name',
-        'nik',
-        'password',
-    ];
+    'nipp',
+    'nama_anggota', 
+    'nik',
+    'password',
+    'role',
+];
 
     protected $hidden = [
         'password',

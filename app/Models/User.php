@@ -5,39 +5,46 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    // 1. Tambahkan ini agar Laravel tahu Primary Key-nya NIPP (bukan ID)
+    protected $table = 'anggota'; 
     protected $primaryKey = 'nipp';
     public $incrementing = false;
     protected $keyType = 'string';
 
-    // 2. Update fillable agar bisa menyimpan NIPP dan NIK dari Excel
     protected $fillable = [
-    'nipp',
-    'nama_anggota', 
-    'nik',
-    'password',
-    'role',
-];
+        'nipp',
+        'nama_anggota', 
+        'nik',
+        'password',
+        'role',
+    ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    // 3. Tambahkan Relasi ke tabel Simpanan
-    public function simpanan()
+    protected $casts = [
+        'password' => 'hashed',
+    ];
+
+    public function getAuthIdentifierName()
     {
-        return $this->hasOne(Simpanan::class, 'nipp', 'nipp');
+        return 'nipp';
     }
 
-    // 4. Tambahkan Relasi ke tabel Hutang
-    public function hutang()
+    public function simpanan(): HasMany
     {
-        return $this->hasOne(Hutang::class, 'nipp', 'nipp');
+        return $this->hasMany(Simpanan::class, 'nipp', 'nipp');
+    }
+
+    public function hutang(): HasMany
+    {
+        return $this->hasMany(Hutang::class, 'nipp', 'nipp');
     }
 }

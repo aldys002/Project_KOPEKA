@@ -17,16 +17,22 @@ public function login(Request $request) {
         'nipp' => 'required',
         'password' => 'required',
     ]);
+
     $credentials = $request->only('nipp', 'password');
+
     if (Auth::attempt($credentials)) {
-        if (Auth::user()->role == 'admin') {
+        if (strtolower(Auth::user()->role) == 'admin') {
             $request->session()->regenerate();
-            return redirect()->intended('admin/dashboard');
+            // Ganti intended menjadi redirect biasa ke path dashboard
+            return redirect('/admin/dashboard'); 
         }
+        
         Auth::logout();
-        return back()->withErrors(['error' => 'Khusus Admin!']);
+        return back()->withErrors(['error' => 'Akses ditolak!']);
     }
-    return back()->withErrors(['error' => 'NIPP/Password Salah!']);
+
+    // Jika gagal, pastikan pesan error ini muncul di layar
+    return back()->withInput()->withErrors(['error' => 'NIPP atau Password salah!']);
 }
 
 public function dashboard() {

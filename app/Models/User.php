@@ -33,6 +33,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    // Fungsi ini wajib ada agar Login Admin/User pakai NIPP tidak mental
     public function getAuthIdentifierName()
     {
         return 'nipp';

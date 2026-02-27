@@ -10,8 +10,18 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
 // Group Middleware Auth
 Route::middleware(['auth'])->group(function () {
+<<<<<<< HEAD
     
     // Dashboard (Manggil UserController@index)
+=======
+
+    // Dashboard Admin
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
+    Route::get('/admin/anggota', [AdminController::class, 'listAnggota'])->name('admin.anggota.index');
+
+    // Dashboard User
+>>>>>>> 8ff7fe3890995f9f613cc5e2872f308bd4fe6c47
     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
     
     // Fitur Tambahan

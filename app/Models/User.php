@@ -11,14 +11,14 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'users'; 
+    protected $table = 'anggota'; // Pastikan ini sesuai dengan nama tabel di database
     protected $primaryKey = 'nipp';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
         'nipp',
-        'nama_anggota', 
+        'users', 
         'nik',
         'password',
         'role',

@@ -28,7 +28,7 @@ class AnggotaSeeder extends Seeder
             User::updateOrCreate(
                 ['nipp' => $row[1]], // Ambil NIPP dari kolom ke-2
                 [
-                    'nama_anggota' => $row[0], // Ambil Nama dari kolom ke-1
+                    'users' => $row[0], // Ambil Nama dari kolom ke-1
                     'password'     => Hash::make('kai123'),
                     'role'         => 'user',
                 ]

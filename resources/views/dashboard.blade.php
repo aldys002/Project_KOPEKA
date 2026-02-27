@@ -1,41 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Dashboard Kopeka</title>
+    <meta charset="UTF-8">
+    <title>Dashboard KOPEKA</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-dark bg-primary mb-4">
-        <div class="container">
-            <span class="navbar-brand">Halo, {{ $user->name }} ({{ $user->nipp }})</span>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button class="btn btn-danger btn-sm">Keluar</button>
-            </form>
+        <div class="container d-flex justify-content-between">
+            <span class="navbar-brand">KOPEKA - Dashboard</span>
+            <form action="{{ route('logout') }}" method="POST">@csrf <button class="btn btn-danger btn-sm">Logout</button></form>
         </div>
     </nav>
 
     <div class="container">
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="card shadow border-0">
-                    <div class="card-body">
-                        <h5 class="text-muted">Total Simpanan</h5>
-                        <h2 class="text-primary">Rp {{ number_format($user->simpanan->total ?? 0, 0, ',', '.') }}</h2>
-                        <hr>
-                        <p class="mb-1">Pokok: Rp {{ number_format($user->simpanan->pokok ?? 0) }}</p>
-                        <p class="mb-1">Wajib: Rp {{ number_format($user->simpanan->wajib ?? 0) }}</p>
-                    </div>
+        <div class="alert alert-info shadow-sm">
+            Halo, <strong>{{ $user->nama_anggota }}</strong> (NIPP: {{ $user->nipp }})
+        </div>
+
+        <div class="row text-center">
+            <div class="col-md-6 mb-3">
+                <div class="card p-4 shadow-sm border-0">
+                    <h6>TOTAL SIMPANAN</h6>
+                    <h2 class="text-success">Rp {{ number_format($keuangan->simp_pokok + $keuangan->simp_wajib + $keuangan->simp_sukarela, 0, ',', '.') }}</h2>
+                    <a href="{{ route('user.simpanan') }}" class="btn btn-outline-success btn-sm mt-2">Lihat Detail Simpanan</a>
                 </div>
             </div>
 
-            <div class="col-md-6 mb-4">
-                <div class="card shadow border-0">
-                    <div class="card-body">
-                        <h5 class="text-muted">Sisa Hutang (RAT 2025)</h5>
-                        <h2 class="text-danger">Rp {{ number_format($user->hutang->saldo_hutang_2025 ?? 0, 0, ',', '.') }}</h2>
-                        <p class="mt-3 text-secondary small">*Data sesuai laporan tahunan terakhir</p>
-                    </div>
+            <div class="col-md-6 mb-3">
+                <div class="card p-4 shadow-sm border-0">
+                    <h6>SALDO HUTANG</h6>
+                    <h2 class="text-danger">Rp {{ number_format($keuangan->saldo_hutang, 0, ',', '.') }}</h2>
+                    <a href="{{ route('user.hutang') }}" class="btn btn-outline-danger btn-sm mt-2">Lihat Detail Pinjaman</a>
                 </div>
             </div>
         </div>

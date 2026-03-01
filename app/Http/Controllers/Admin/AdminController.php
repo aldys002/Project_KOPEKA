@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Hutang; 
 
 class AdminController extends Controller
 {
@@ -36,13 +37,32 @@ public function login(Request $request) {
 }
 
 public function dashboard() {
-   
+
     $totalAnggota = \App\Models\User::where('role', 'user')->count();
-    return view('admin.dashboard', compact('totalAnggota'));
+
+    $totalPokok = \App\Models\Simpanan::sum('pokok');
+    $totalWajib = \App\Models\Simpanan::sum('wajib');
+    $totalSukarela = \App\Models\Simpanan::sum('sukarela');
+    $totalSimpananKeseluruhan = \App\Models\Simpanan::sum('total_simpanan');
+
+    $totalHutang = \App\Models\Hutang::sum('saldo_hutang_2025');
+
+    return view('admin.dashboard', compact(
+        'totalAnggota', 
+        'totalPokok', 
+        'totalWajib', 
+        'totalSukarela', 
+        'totalSimpananKeseluruhan',
+        'totalHutang'
+    ));
 }
 
 public function listAnggota() {
-    $anggota = \App\Models\User::where('role', 'user')->get();
+    
+    $anggota = \App\Models\User::where('role', 'user')
+                ->with(['simpanan', 'hutang']) 
+                ->get();
+                
     return view('admin.anggota_index', compact('anggota'));
 }
 

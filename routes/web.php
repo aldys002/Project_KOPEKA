@@ -20,6 +20,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
     Route::get('/admin/anggota', [AdminController::class, 'listAnggota'])->name('admin.anggota.index');
+    Route::post('/admin/input-simpanan', [AdminController::class, 'inputSimpanan'])->name('admin.simpanan.update');
+Route::post('/admin/input-hutang', [AdminController::class, 'inputHutang'])->name('admin.hutang.update');
 
     // Dashboard User
     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');

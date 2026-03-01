@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -33,19 +33,18 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // Fungsi ini wajib ada agar Login Admin/User pakai NIPP tidak mental
     public function getAuthIdentifierName()
     {
         return 'nipp';
     }
 
-    //public function simpanan(): HasMany
-    //{
-     //   return $this->hasMany(Simpanan::class, 'nipp', 'nipp');
-    //}
+    public function simpanan(): HasOne
+    {
+        return $this->hasOne(Simpanan::class, 'nipp', 'nipp');
+    }
 
-    //public function hutang(): HasMany
-    //{
-    //    return $this->hasMany(Hutang::class, 'nipp', 'nipp');
-    //}
+    public function hutang(): HasOne
+    {
+        return $this->hasOne(Hutang::class, 'nipp', 'nipp');
+    }
 }

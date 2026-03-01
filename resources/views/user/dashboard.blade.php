@@ -2,37 +2,82 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard KOPEKA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOPEKA - Rail Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --kai-blue: #003399; --kai-orange: #ED6B23; --kai-gray: #E8E9ED; }
+        body { background-color: var(--kai-gray); font-family: 'Segoe UI', Roboto, sans-serif; }
+        
+        /* Navbar KAI Style */
+        .navbar { background-color: white !important; border-bottom: 5px solid var(--kai-orange); padding: 1rem; }
+        .navbar-brand { color: var(--kai-blue) !important; font-weight: 800; font-size: 1.5rem; }
+
+        /* Card Style */
+        .card-kai { border: none; border-radius: 12px; background: white; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .card-header-kai { background-color: var(--kai-blue); color: white; padding: 15px; font-weight: 600; }
+        
+        /* Hero Section */
+        .hero-section { background: linear-gradient(135deg, var(--kai-blue) 0%, #002266 100%); color: white; border-radius: 15px; padding: 40px; margin-bottom: 30px; position: relative; }
+        .hero-section::after { content: ""; position: absolute; right: 20px; bottom: 0; width: 200px; height: 100px; background: url('https://www.kai.id/static/images/logo_kai.png') no-repeat center; background-size: contain; opacity: 0.1; }
+
+        .btn-kai { background-color: var(--kai-orange); color: white; border-radius: 50px; font-weight: bold; border: none; padding: 10px 25px; transition: 0.3s; }
+        .btn-kai:hover { background-color: #d45a1a; color: white; transform: scale(1.05); }
+    </style>
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-dark bg-primary mb-4">
-        <div class="container d-flex justify-content-between">
-            <span class="navbar-brand">KOPEKA - Dashboard</span>
-            <form action="{{ route('logout') }}" method="POST">@csrf <button class="btn btn-danger btn-sm">Logout</button></form>
+<body>
+    <nav class="navbar navbar-light shadow-sm mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand" href="#"><i class="fas fa-train me-2"></i>KOPEKA <span style="color: var(--kai-orange)">RAIL</span></a>
+            <form action="{{ route('logout') }}" method="POST">@csrf <button class="btn btn-outline-danger btn-sm rounded-pill fw-bold">Keluar</button></form>
         </div>
     </nav>
 
     <div class="container">
-        <div class="alert alert-info shadow-sm">
-            Halo, <strong>{{ $user->nama_anggota }}</strong> (NIPP: {{ $user->nipp }})
+        <div class="hero-section shadow">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="text-uppercase" style="letter-spacing: 2px; color: var(--kai-orange)">Layanan Keuangan Anggota</h5>
+                    <h2 class="display-6 fw-bold">Halo, {{ $user->users }}</h2>
+                    <p class="lead opacity-75">NIPP: {{ $user->nipp }} | "Melayani dengan Setulus Hati"</p>
+                </div>
+            </div>
         </div>
 
-        <div class="row text-center">
-            <div class="col-md-6 mb-3">
-                <div class="card p-4 shadow-sm border-0">
-                    <h6>TOTAL SIMPANAN</h6>
-                    <h2 class="text-success">Rp {{ number_format($keuangan->simp_pokok + $keuangan->simp_wajib + $keuangan->simp_sukarela, 0, ',', '.') }}</h2>
-                    <a href="{{ route('user.simpanan') }}" class="btn btn-outline-success btn-sm mt-2">Lihat Detail Simpanan</a>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card-kai shadow-sm">
+                    <div class="card-header-kai d-flex justify-content-between align-items-center">
+                        <span>TOTAL SIMPANAN</span>
+                        <i class="fas fa-vault"></i>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h1 class="fw-bold text-dark mb-4">Rp {{ number_format($keuangan->total_simpanan, 0, ',', '.') }}</h1>
+                        <a href="{{ route('user.simpanan') }}" class="btn btn-kai w-100">LIHAT DETAIL SIMPANAN</a>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <div class="card p-4 shadow-sm border-0">
-                    <h6>SALDO HUTANG</h6>
-                    <h2 class="text-danger">Rp {{ number_format($keuangan->saldo_hutang, 0, ',', '.') }}</h2>
-                    <a href="{{ route('user.hutang') }}" class="btn btn-outline-danger btn-sm mt-2">Lihat Detail Pinjaman</a>
+            <div class="col-md-6">
+                <div class="card-kai shadow-sm">
+                    <div class="card-header-kai d-flex justify-content-between align-items-center" style="background-color: #333;">
+                        <span>SALDO PINJAMAN</span>
+                        <i class="fas fa-file-invoice-dollar text-warning"></i>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h1 class="fw-bold text-danger mb-4">Rp {{ number_format($keuangan->saldo_hutang, 0, ',', '.') }}</h1>
+                        <a href="{{ route('user.hutang') }}" class="btn btn-kai w-100">CEK RINCIAN PINJAMAN</a>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="mt-5 p-4 bg-white rounded-3 shadow-sm border-start border-5 border-warning d-flex align-items-center">
+            <i class="fas fa-info-circle fa-2x text-primary me-3"></i>
+            <div>
+                <h6 class="mb-0 fw-bold">Informasi Penting</h6>
+                <p class="mb-0 text-muted small">Saldo pinjaman diperbarui secara otomatis dengan bunga flat 1% per bulan sesuai kebijakan koperasi.</p>
             </div>
         </div>
     </div>

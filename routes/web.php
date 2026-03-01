@@ -3,31 +3,29 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController; 
+use App\Http\Controllers\DashboardController;
 
-// Halaman Login
-Route::get('/', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/', function () {
+    return view('welcome'); 
+})->name('home');
+// --- Halaman Login ---
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
-// Group Middleware Auth
+// --- Group Middleware Auth (Hanya yang sudah login) ---
 Route::middleware(['auth'])->group(function () {
-<<<<<<< HEAD
-    
-    // Dashboard (Manggil UserController@index)
-=======
 
-    // Dashboard Admin
+    // --- Rute Untuk Admin ---
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
     Route::get('/admin/anggota', [AdminController::class, 'listAnggota'])->name('admin.anggota.index');
 
-    // Dashboard User
->>>>>>> 8ff7fe3890995f9f613cc5e2872f308bd4fe6c47
+    // --- Rute Untuk User Biasa ---
     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
-    
-    // Fitur Tambahan
     Route::get('/my-hutang', [UserController::class, 'showHutang'])->name('user.hutang');
     Route::get('/my-simpanan', [UserController::class, 'showSimpanan'])->name('user.simpanan');
 
-    // Logout
+    // --- Logout Umum ---
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

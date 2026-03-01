@@ -11,12 +11,13 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-<<<<<<< HEAD
-    protected $table = 'anggota'; // Pastikan ini sesuai dengan nama tabel di database
-=======
+    // Nama tabel di database sesuai migration lo
     protected $table = 'anggota'; 
->>>>>>> 8ff7fe3890995f9f613cc5e2872f308bd4fe6c47
+
+    // Primary key bukan 'id', tapi 'nipp'
     protected $primaryKey = 'nipp';
+
+    // Karena NIPP bukan angka auto-increment (tapi string/manual)
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -37,19 +38,26 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // Fungsi ini wajib ada agar Login Admin/User pakai NIPP tidak mental
+    // Beritahu Laravel kalau login pakai kolom 'nipp'
     public function getAuthIdentifierName()
     {
         return 'nipp';
     }
 
-    //public function simpanan(): HasMany
-    //{
-     //   return $this->hasMany(Simpanan::class, 'nipp', 'nipp');
-    //}
+    /**
+     * Relasi ke Tabel Simpanan
+     * Satu anggota bisa punya banyak catatan simpanan (atau satu jika lo set begitu)
+     */
+    public function simpanans(): HasMany
+    {
+        return $this->hasMany(Simpanan::class, 'nipp', 'nipp');
+    }
 
-    //public function hutang(): HasMany
-    //{
-    //    return $this->hasMany(Hutang::class, 'nipp', 'nipp');
-    //}
+    /**
+     * Relasi ke Tabel Hutang
+     */
+    public function hutangs(): HasMany
+    {
+        return $this->hasMany(Hutang::class, 'nipp', 'nipp');
+    }
 }

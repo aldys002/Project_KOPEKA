@@ -3,25 +3,40 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\AdminController; 
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\AdminController;
 
+// --- Halaman Depan ---
 Route::get('/', function () {
     return view('welcome'); 
 })->name('home');
-// --- Halaman Login ---
+
+// --- Login User Biasa ---
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 
-// --- Group Middleware Auth (Hanya yang sudah login) ---
+// --- Login Khusus Admin ---
+Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
+Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.submit');
+
+// --- Group Middleware Auth (Hanya yang sudah login bisa akses) ---
 Route::middleware(['auth'])->group(function () {
 
-    // --- Rute Untuk Admin ---
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
-    Route::get('/admin/anggota', [AdminController::class, 'listAnggota'])->name('admin.anggota.index');
-    Route::post('/admin/input-simpanan', [AdminController::class, 'inputSimpanan'])->name('admin.simpanan.update');
-Route::post('/admin/input-hutang', [AdminController::class, 'inputHutang'])->name('admin.hutang.update');
+    // --- Rute Khusus Admin ---
+    Route::prefix('admin')->group(function () {
+        // Dashboard & Logout
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+        Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+        Route::get('/admin/laporan-bulanan', [AdminController::class, 'laporanBulanan'])->name('admin.laporan.bulanan');
+        Route::post('/admin/laporan-bulanan/simpan', [AdminController::class, 'simpanBulanan'])->name('admin.laporan.simpan');
+        // Manajemen Anggota (Input Data, Tambah Anggota, & Status Pensiun)
+        Route::get('/anggota', [AdminController::class, 'listAnggota'])->name('admin.anggota.index');
+        Route::post('/anggota/tambah', [AdminController::class, 'tambahAnggota'])->name('admin.anggota.tambah');
+        Route::post('/anggota/status/{id}', [AdminController::class, 'toggleStatus'])->name('admin.anggota.status');
+
+        // Update Simpanan & Hutang
+        Route::post('/input-simpanan', [AdminController::class, 'inputSimpanan'])->name('admin.simpanan.update');
+        Route::post('/input-hutang', [AdminController::class, 'inputHutang'])->name('admin.hutang.update');
+    });
 
     // --- Rute Untuk User Biasa ---
     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');

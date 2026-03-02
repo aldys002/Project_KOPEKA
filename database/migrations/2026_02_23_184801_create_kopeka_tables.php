@@ -6,44 +6,35 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up() {
-        // Hapus tabel lama jika ada
-        Schema::dropIfExists('hutang');
-        Schema::dropIfExists('simpanan');
-        Schema::dropIfExists('anggota');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
+    Schema::create('anggota', function (Blueprint $table) {
+        $table->id(); // Kunci utama baru (Auto Increment)
+        $table->string('nipp', 50)->nullable(); 
+        $table->string('nik', 50)->nullable();
+        $table->string('users', 150); 
+        $table->string('password');
+        $table->string('role')->default('user');
+        $table->rememberToken();
+        $table->timestamps();
+    });
 
-        // 1. Tabel Anggota
-        Schema::create('anggota', function (Blueprint $table) {
-            $table->string('nipp', 20)->primary(); 
-            $table->string('nik', 20)->nullable();
-            $table->string('users', 150); 
-            $table->string('password');
-            $table->string('role')->default('user');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+    Schema::create('simpanan', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('anggota_id')->constrained('anggota')->onDelete('cascade');
+        $table->integer('tahun'); // Untuk filter tahun nanti
+        $table->decimal('pokok', 15, 2)->default(0);
+        $table->decimal('wajib', 15, 2)->default(0);
+        $table->decimal('sukarela', 15, 2)->default(0);
+        $table->decimal('total_simpanan', 15, 2)->default(0);
+        $table->timestamps();
+    });
 
-        // 2. Tabel Simpanan
-        Schema::create('simpanan', function (Blueprint $table) {
-            $table->id();
-            $table->string('nipp', 20);
-            $table->decimal('pokok', 15, 2)->default(0);
-            $table->decimal('wajib', 15, 2)->default(0);
-            $table->decimal('sukarela', 15, 2)->default(0);
-            $table->decimal('total_simpanan', 15, 2)->default(0);
-            $table->foreign('nipp')->references('nipp')->on('anggota')->onDelete('cascade');
-            $table->timestamps();
-        });
-
-        // 3. Tabel Hutang
-        Schema::create('hutang', function (Blueprint $table) {
-            $table->id();
-            $table->string('nipp', 20);
-            $table->decimal('saldo_hutang_2025', 15, 2)->default(0);
-            $table->foreign('nipp')->references('nipp')->on('anggota')->onDelete('cascade');
-            $table->timestamps();
-        });
+    Schema::create('hutang', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('anggota_id')->constrained('anggota')->onDelete('cascade');
+        $table->integer('tahun');
+        $table->decimal('saldo_hutang', 15, 2)->default(0);
+        $table->timestamps();
+    });
 
         // Tabel pendukung default Laravel
         Schema::create('password_reset_tokens', function (Blueprint $table) {

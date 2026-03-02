@@ -3,14 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Hutang extends Model
 {
     protected $table = 'hutang';
-    protected $fillable = ['nipp', 'saldo_hutang_2025'];
 
-    public function user()
+    protected $fillable = [
+        'anggota_id',
+        'tahun',
+        'saldo_hutang'
+    ];
+
+    public function anggota(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'nipp', 'nipp');
+        return $this->belongsTo(User::class, 'anggota_id', 'id');
     }
 }

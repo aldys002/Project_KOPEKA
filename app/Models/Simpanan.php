@@ -3,21 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Simpanan extends Model
 {
     protected $table = 'simpanan';
-    protected $fillable = ['nipp', 'pokok', 'wajib', 'sukarela', 'total_simpanan'];
 
-    protected static function booted()
-    {
-        static::saving(function ($simpanan) {
-            $simpanan->total_simpanan = $simpanan->pokok + $simpanan->wajib + $simpanan->sukarela;
-        });
-    }
+    protected $fillable = [
+        'anggota_id',
+        'tahun',
+        'pokok',
+        'wajib',
+        'sukarela',
+        'total_simpanan'
+    ];
 
-    public function user()
+    public function anggota(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'nipp', 'nipp');
+        return $this->belongsTo(User::class, 'anggota_id', 'id');
     }
 }

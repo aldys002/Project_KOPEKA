@@ -23,9 +23,10 @@
                                 <label>Nama Anggota</label>
                                 <input type="text" name="nama_anggota" class="form-control" placeholder="Masukkan Nama Lengkap" required>
                             </div>
-                            <div class="mb-3">
-                                <label>NIPP</label>
-                                <input type="text" name="nipp" class="form-control" placeholder="Contoh: 11366" required>
+                           <div class="mb-3">
+                                <label class="fw-bold">NIPP / NIK</label>
+                                <input type="text" name="identity" class="form-control" placeholder="Masukkan NIPP atau NIK" required value="{{ old('identity') }}">
+                                <small class="text-muted">Gunakan NIK jika Anda belum memiliki NIPP.</small>
                             </div>
                             <div class="mb-3">
                                 <label>Password</label>

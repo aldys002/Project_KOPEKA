@@ -10,45 +10,57 @@ use App\Models\User;
 class AuthController extends Controller
 {
     public function showLogin() {
+        // Jika sudah login, lempar langsung ke dashboard
+        if (Auth::check()) {
+            return redirect()->route('user.dashboard');
+        }
         return view('login');
     }
 
     public function login(Request $request) {
-        // 1. Validasi input - Nama field harus 'nama_anggota' sesuai file Blade lo
+        // 1. Validasi input
         $request->validate([
             'nama_anggota' => 'required',
-            'nipp'         => 'required',
+            'identity'     => 'required', // Ini field NIPP/NIK
             'password'     => 'required',
         ]);
 
-        // 2. Cari user berdasarkan NIPP (Primary Key)
-        $user = User::where('nipp', $request->nipp)->first();
+        // 2. Cari user berdasarkan NIPP ATAU NIK
+        // Kita cek di dua kolom sekaligus agar anggota tanpa NIPP bisa login
+        $user = User::where('nipp', $request->identity)
+                    ->orWhere('nik', $request->identity)
+                    ->first();
 
         if ($user) {
             // 3. Cek apakah Nama cocok (Case Insensitive)
-            // Di database kolomnya namanya 'users', di input namanya 'nama_anggota'
-            $inputNama = strtoupper($request->nama_anggota);
-            $dbNama    = strtoupper($user->users);
+            // Menggunakan strtolower agar 'Budi' dan 'budi' tetap dianggap sama
+            $inputNama = strtolower(trim($request->nama_anggota));
+            $dbNama    = strtolower(trim($user->users));
 
             if ($dbNama === $inputNama) {
                 
-                // 4. Cek Password menggunakan Hash::check
-                // Ini akan mengevaluasi 'kai123' terhadap hash Bcrypt di database
+                // 4. Cek Password
                 if (Hash::check($request->password, $user->password)) {
                     
-                    // 5. Login-kan secara manual ke dalam session Laravel
+                    // 5. Login-kan ke session
                     Auth::login($user);
                     
                     $request->session()->regenerate();
                     
-                    // Lempar ke dashboard
+                    // Cek role: jika admin ke dashboard admin, jika user ke dashboard user
+                    if ($user->role === 'admin') {
+                        return redirect()->intended('/admin/dashboard');
+                    }
+                    
                     return redirect()->intended('/dashboard');
                 }
             }
         }
 
-        // Jika salah satu (NIPP, Nama, atau Password) salah, balikkan error
-        return back()->withErrors(['error' => 'Kombinasi Nama, NIPP, atau Password salah!'])->withInput();
+        // Jika gagal, kembalikan dengan pesan error yang aman
+        return back()->withErrors([
+            'error' => 'Kombinasi Nama, Identitas (NIPP/NIK), atau Password salah!'
+        ])->withInput($request->except('password'));
     }
 
     public function logout(Request $request) {

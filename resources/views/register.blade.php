@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Daftar Anggota - KOPEKA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Anggota - KOPEKA RAIL</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -28,27 +29,33 @@
                     </div>
                     <div class="card-body p-4 p-md-5 bg-white">
                         
+                        {{-- Menampilkan Error dari Controller --}}
                         @if($errors->any())
-                            <div class="alert alert-danger border-0 small">
+                            <div class="alert alert-danger border-0 small shadow-sm">
                                 <i class="fas fa-exclamation-circle me-2"></i> {{ $errors->first() }}
                             </div>
                         @endif
 
+                        {{-- Form Register --}}
                         <form action="{{ route('register.submit') }}" method="POST">
-                            @csrf
+                            @csrf {{-- WAJIB: Biar gak error 419 Page Expired --}}
+
                             <div class="mb-3">
                                 <label class="form-label small fw-bold">Nama Lengkap Sesuai KTP</label>
-                                <input type="text" name="nama_anggota" class="form-control" placeholder="Contoh: Budi Santoso" value="{{ old('nama_anggota') }}" required>
+                                <input type="text" name="nama_anggota" class="form-control" placeholder="Contoh: Zubaedah" value="{{ old('nama_anggota') }}" required>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label small fw-bold">NIPP</label>
-                                    <input type="text" name="nipp" class="form-control" placeholder="11366" value="{{ old('nipp') }}" required>
+                                    {{-- Required dihapus agar anggota tanpa NIPP bisa daftar --}}
+                                    <input type="text" name="nipp" class="form-control" placeholder="11366" value="{{ old('nipp') }}">
+                                    <div class="form-text mt-1" style="font-size: 0.7rem;">Kosongkan jika tidak ada.</div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label small fw-bold">NIK (Opsional)</label>
-                                    <input type="text" name="nik" class="form-control" placeholder="NIK" value="{{ old('nik') }}">
+                                    <label class="form-label small fw-bold">NIK</label>
+                                    <input type="text" name="nik" class="form-control" placeholder="NIK Sesuai KTP" value="{{ old('nik') }}">
+                                    <div class="form-text mt-1" style="font-size: 0.7rem;">Gunakan NIK jika NIPP kosong.</div>
                                 </div>
                             </div>
 

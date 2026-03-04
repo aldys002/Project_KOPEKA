@@ -8,21 +8,36 @@ return new class extends Migration {
     public function up() {
         Schema::create('anggota', function (Blueprint $table) {
             $table->id();
-            // UNIQUE DIHAPUS: Biar NIPP 'OUT' atau 'TOKO' yang jumlahnya banyak bisa masuk semua
             $table->string('nipp', 50)->nullable(); 
             $table->string('nik', 50)->nullable();
             $table->string('users', 150); 
             $table->string('password');
             $table->string('role')->default('user');
-            // Kolom status DIHAPUS dari sini karena kamu punya migration sendiri
+)
+        Schema::create('anggota', function (Blueprint $table) {
+            $table->id();
+            // NIPP & NIK dibuat unique agar satu identitas cuma bisa punya satu akun
+            $table->string('nipp', 50)->unique()->nullable(); 
+            $table->string('nik', 50)->unique()->nullable(); // Tambah UNIQUE & NULLABLE
+            $table->string('users', 150); 
+            $table->string('password');
+            $table->string('role')->default('user');
             $table->rememberToken();
             $table->timestamps();
         });
+
 
         Schema::create('simpanan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('anggota_id')->nullable()->constrained('anggota')->onDelete('cascade');
             $table->string('nipp_asal', 255)->nullable(); 
+        // 2. Tabel Simpanan
+        Schema::create('simpanan', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('anggota_id')->nullable()->constrained('anggota')->onDelete('cascade');
+            // Jembatan: Simpan NIPP atau NIK dari CSV di sini
+            $table->string('nipp_asal')->nullable()->index(); 
+            $table->string('nik_asal')->nullable()->index(); // Tambah ini buat jembatan NIK
             $table->integer('tahun');
             $table->decimal('pokok', 15, 2)->default(0);
             $table->decimal('wajib', 15, 2)->default(0);
@@ -35,6 +50,13 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('anggota_id')->nullable()->constrained('anggota')->onDelete('cascade');
             $table->string('nipp_asal', 255)->nullable(); 
+
+        // 3. Tabel Hutang
+        Schema::create('hutang', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('anggota_id')->nullable()->constrained('anggota')->onDelete('cascade');
+            $table->string('nipp_asal')->nullable()->index();
+            $table->string('nik_asal')->nullable()->index(); // Tambah ini juga
             $table->integer('tahun');
             $table->decimal('saldo_hutang', 15, 2)->default(0);
             $table->timestamps();

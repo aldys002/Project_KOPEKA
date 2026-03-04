@@ -30,6 +30,11 @@ Route::middleware(['auth'])->group(function () {
 
     // --- Rute Khusus Admin ---
     Route::prefix('admin')->group(function () {
+        Route::get('/home', function() {
+        return Auth::user()->role === 'admin' 
+            ? redirect()->route('admin.dashboard') 
+            : redirect()->route('user.dashboard');
+    })->name('dashboard');
         // Dashboard & Logout
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');

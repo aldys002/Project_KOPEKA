@@ -9,11 +9,11 @@ return new class extends Migration {
         // 1. Tabel Anggota
         Schema::create('anggota', function (Blueprint $table) {
             $table->id();
-            // UNIQUE DIHAPUS agar NIPP 'OUT'/'TOKO' bisa masuk berkali-kali
+            // NIPP & NIK tidak pakai UNIQUE agar data 'OUT'/'TOKO' bisa masuk semua
             $table->string('nipp', 50)->nullable(); 
             $table->string('nik', 50)->nullable();
             $table->string('users', 150); 
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->string('role')->default('user');
             $table->rememberToken();
             $table->timestamps();
@@ -22,8 +22,10 @@ return new class extends Migration {
         // 2. Tabel Simpanan
         Schema::create('simpanan', function (Blueprint $table) {
             $table->id();
+            // Tetap pakai anggota_id untuk relasi database yang cepat
             $table->foreignId('anggota_id')->nullable()->constrained('anggota')->onDelete('cascade');
             $table->string('nipp_asal')->nullable(); 
+            $table->string('nik_asal')->nullable(); // Ditambahkan buat jalur cadangan ambil data
             $table->integer('tahun');
             $table->decimal('pokok', 15, 2)->default(0);
             $table->decimal('wajib', 15, 2)->default(0);
@@ -37,19 +39,19 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('anggota_id')->nullable()->constrained('anggota')->onDelete('cascade');
             $table->string('nipp_asal')->nullable(); 
+            $table->string('nik_asal')->nullable(); // Ditambahkan juga di sini
             $table->integer('tahun');
             $table->decimal('saldo_hutang', 15, 2)->default(0);
             $table->timestamps();
         });
 
-        // 4. Tabel Password Reset
+        // 4. Tabel Password Reset & Sessions (Tetap Sama)
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
 
-        // 5. Tabel Sessions
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();

@@ -19,8 +19,8 @@ class KeuanganSeeder extends Seeder
 
         $tahunAktif = 2025;
 
-        // Ambil semua anggota dan kelompokkan berdasarkan NIPP/NIK sebagai kunci
-        // Ini kunci rahasia supaya NIPP "Out" atau "Toko" yang banyak bisa dibagi rata
+        // Ambil semua anggota dan kelompokkan berdasarkan NIPP sebagai kunci
+        // Kita simpan objek User utuh di sini (termasuk ID dan NIK-nya)
         $poolSimpanan = User::all()->groupBy('nipp');
         $poolHutang = User::all()->groupBy('nipp');
 
@@ -35,16 +35,20 @@ class KeuanganSeeder extends Seeder
 
                 $identityCsv = trim($row[0]);
                 $anggotaId = null;
+                $nikAsal = null;
 
-                // Ambil satu anggota dari antrian berdasarkan NIPP/Identitas CSV
+                // Ambil satu objek anggota dari antrian berdasarkan NIPP/Identitas CSV
                 if (isset($poolSimpanan[$identityCsv]) && $poolSimpanan[$identityCsv]->count() > 0) {
-                    // shift() mengambil satu item teratas dan menghapusnya dari antrian pool
-                    $anggotaId = $poolSimpanan[$identityCsv]->shift()->id;
+                    // shift() mengambil satu objek User utuh
+                    $anggota = $poolSimpanan[$identityCsv]->shift();
+                    $anggotaId = $anggota->id;
+                    $nikAsal = $anggota->nik; // Ambil NIK dari tabel anggota
                 }
 
                 DB::table('simpanan')->insert([
                     'anggota_id'     => $anggotaId,
                     'nipp_asal'      => $identityCsv, 
+                    'nik_asal'       => $nikAsal, // SEKARANG NIK TIDAK AKAN NULL LAGI
                     'tahun'          => $tahunAktif,
                     'pokok'          => $this->cleanNumber($row[1] ?? 0),
                     'wajib'          => $this->cleanNumber($row[2] ?? 0),
@@ -67,15 +71,19 @@ class KeuanganSeeder extends Seeder
 
                 $identityCsv = trim($rowH[0]);
                 $anggotaId = null;
+                $nikAsal = null;
 
-                // Ambil satu anggota dari antrian pool hutang
+                // Ambil satu objek anggota dari antrian pool hutang
                 if (isset($poolHutang[$identityCsv]) && $poolHutang[$identityCsv]->count() > 0) {
-                    $anggotaId = $poolHutang[$identityCsv]->shift()->id;
+                    $anggota = $poolHutang[$identityCsv]->shift();
+                    $anggotaId = $anggota->id;
+                    $nikAsal = $anggota->nik; // Ambil NIK dari tabel anggota
                 }
 
                 DB::table('hutang')->insert([
                     'anggota_id'    => $anggotaId,
                     'nipp_asal'     => $identityCsv, 
+                    'nik_asal'      => $nikAsal, // SEKARANG NIK TIDAK AKAN NULL LAGI
                     'tahun'         => $tahunAktif,
                     'saldo_hutang'  => $this->cleanNumber($rowH[1] ?? 0),
                     'created_at'    => now(),
@@ -84,15 +92,14 @@ class KeuanganSeeder extends Seeder
             }
         }
 
-        $this->command->info("Seeding Selesai! Data simpanan & hutang sekarang terbagi rata ke ID anggota yang unik.");
+        $this->command->info("Seeding Selesai! NIK dan ID sekarang sinkron.");
     }
 
     /**
-     * Membersihkan string angka dari karakter non-numerik (titik, koma, spasi)
+     * Membersihkan string angka dari karakter non-numerik (titik, koma, spasi, Rp)
      */
     private function cleanNumber($value) {
         if (!$value) return 0;
-        // Hapus karakter yang sering muncul di format rupiah
         $clean = str_replace(['.', ' ', ',', 'Rp'], '', $value);
         return (float) $clean;
     }

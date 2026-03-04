@@ -5,10 +5,17 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\AdminController;
 
+
+
 // --- Halaman Depan ---
 Route::get('/', function () {
     return view('welcome'); 
 })->name('home');
+
+// Halaman Register
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+// Proses Simpan Register
+Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
 // --- Login User Biasa ---
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -40,7 +47,6 @@ Route::middleware(['auth'])->group(function () {
 
     // --- Rute Untuk User Biasa ---
     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
-    Route::get('/my-hutang', [UserController::class, 'showHutang'])->name('user.hutang');
     Route::get('/my-simpanan', [UserController::class, 'showSimpanan'])->name('user.simpanan');
 
     // --- Logout Umum ---

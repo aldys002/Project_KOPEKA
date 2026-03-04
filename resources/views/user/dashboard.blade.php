@@ -15,15 +15,17 @@
         .navbar-brand { color: var(--kai-blue) !important; font-weight: 800; font-size: 1.5rem; }
 
         /* Card Style */
-        .card-kai { border: none; border-radius: 12px; background: white; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .card-kai { border: none; border-radius: 12px; background: white; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: 100%; }
         .card-header-kai { background-color: var(--kai-blue); color: white; padding: 15px; font-weight: 600; }
         
         /* Hero Section */
         .hero-section { background: linear-gradient(135deg, var(--kai-blue) 0%, #002266 100%); color: white; border-radius: 15px; padding: 40px; margin-bottom: 30px; position: relative; }
         .hero-section::after { content: ""; position: absolute; right: 20px; bottom: 0; width: 200px; height: 100px; background: url('https://www.kai.id/static/images/logo_kai.png') no-repeat center; background-size: contain; opacity: 0.1; }
 
-        .btn-kai { background-color: var(--kai-orange); color: white; border-radius: 50px; font-weight: bold; border: none; padding: 10px 25px; transition: 0.3s; }
+        .btn-kai { background-color: var(--kai-orange); color: white; border-radius: 50px; font-weight: bold; border: none; padding: 10px 25px; transition: 0.3s; text-decoration: none; display: inline-block; }
         .btn-kai:hover { background-color: #d45a1a; color: white; transform: scale(1.05); }
+        
+        .placeholder-card { border: 2px dashed #ccc; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #999; height: 100%; min-height: 200px; }
     </style>
 </head>
 <body>
@@ -34,7 +36,7 @@
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container pb-5">
         <div class="hero-section shadow">
             <div class="row align-items-center">
                 <div class="col-md-8">
@@ -67,17 +69,19 @@
                     </div>
                     <div class="p-4 text-center">
                         <h1 class="fw-bold text-danger mb-4">Rp {{ number_format($keuangan->saldo_hutang, 0, ',', '.') }}</h1>
-                        <a href="{{ route('user.hutang') }}" class="btn btn-kai w-100">CEK RINCIAN PINJAMAN</a>
+                        <div class="alert alert-light border small text-muted">
+                            <i class="fas fa-info-circle me-1"></i> Data pinjaman ini bersifat tetap berdasarkan laporan admin.
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="mt-5 p-4 bg-white rounded-3 shadow-sm border-start border-5 border-warning d-flex align-items-center">
-            <i class="fas fa-info-circle fa-2x text-primary me-3"></i>
+            <i class="fas fa-calendar-check fa-2x text-primary me-3"></i>
             <div>
-                <h6 class="mb-0 fw-bold">Informasi Penting</h6>
-                <p class="mb-0 text-muted small">Saldo pinjaman diperbarui secara otomatis dengan bunga flat 1% per bulan sesuai kebijakan koperasi.</p>
+                <h6 class="mb-0 fw-bold">Update Terakhir Data</h6>
+                <p class="mb-0 text-muted small">Seluruh data keuangan di atas disinkronkan langsung dari data pusat Koperasi sesuai periode laporan terbaru.</p>
             </div>
         </div>
     </div>

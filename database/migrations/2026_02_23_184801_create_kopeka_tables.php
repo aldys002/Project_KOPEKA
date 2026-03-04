@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up() {
     Schema::create('anggota', function (Blueprint $table) {
-        $table->id(); // Kunci utama baru (Auto Increment)
-        $table->string('nipp', 50)->nullable(); 
+        $table->id();
+        $table->string('nipp', 50)->unique()->nullable(); // Tambah UNIQUE biar gak double akun
         $table->string('nik', 50)->nullable();
         $table->string('users', 150); 
         $table->string('password');
@@ -19,8 +19,10 @@ return new class extends Migration {
 
     Schema::create('simpanan', function (Blueprint $table) {
         $table->id();
-        $table->foreignId('anggota_id')->constrained('anggota')->onDelete('cascade');
-        $table->integer('tahun'); // Untuk filter tahun nanti
+        // Dibuat nullable() supaya data CSV bisa masuk duluan tanpa pemilik
+        $table->foreignId('anggota_id')->nullable()->constrained('anggota')->onDelete('cascade');
+        $table->string('nipp_asal')->nullable(); // Jembatan buat nyocokkan data CSV
+        $table->integer('tahun');
         $table->decimal('pokok', 15, 2)->default(0);
         $table->decimal('wajib', 15, 2)->default(0);
         $table->decimal('sukarela', 15, 2)->default(0);
@@ -30,28 +32,29 @@ return new class extends Migration {
 
     Schema::create('hutang', function (Blueprint $table) {
         $table->id();
-        $table->foreignId('anggota_id')->constrained('anggota')->onDelete('cascade');
+        $table->foreignId('anggota_id')->nullable()->constrained('anggota')->onDelete('cascade');
+        $table->string('nipp_asal')->nullable(); // Jembatan buat nyocokkan data CSV
         $table->integer('tahun');
         $table->decimal('saldo_hutang', 15, 2)->default(0);
         $table->timestamps();
     });
 
-        // Tabel pendukung default Laravel
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
+    // Tabel pendukung Laravel tetap sama...
+    Schema::create('password_reset_tokens', function (Blueprint $table) {
+        $table->string('email')->primary();
+        $table->string('token');
+        $table->timestamp('created_at')->nullable();
+    });
 
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->longText('payload');
-            $table->integer('last_activity')->index();
-        });
-    }
+    Schema::create('sessions', function (Blueprint $table) {
+        $table->string('id')->primary();
+        $table->foreignId('user_id')->nullable()->index();
+        $table->string('ip_address', 45)->nullable();
+        $table->text('user_agent')->nullable();
+        $table->longText('payload');
+        $table->integer('last_activity')->index();
+    });
+}
 
     public function down() {
         Schema::dropIfExists('sessions');

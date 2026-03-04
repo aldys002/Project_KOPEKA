@@ -6,9 +6,65 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
-{
+{   public function showRegister() {
+    return view('register');
+}
+
+public function register(Request $request) {
+    // 1. Validasi Input
+    $request->validate([
+        'nama_anggota' => 'required|string|max:150',
+        'nipp'         => 'required|unique:anggota,nipp', // NIPP harus unik di tabel anggota
+        'nik'          => 'nullable', // NIK boleh setengah atau kosong
+        'password'     => 'required|min:8|confirmed',
+    ], [
+        'nipp.unique' => 'NIPP ini sudah terdaftar sebagai akun.',
+        'password.confirmed' => 'Konfirmasi password tidak sesuai.'
+    ]);
+
+    // 2. Simpan Anggota Baru ke tabel 'anggota'
+    // id ini yang akan jadi 'anggota_id' di tabel simpanan & hutang
+    $anggotaId = DB::table('anggota')->insertGetId([
+        'users'      => $request->nama_anggota,
+        'nipp'       => $request->nipp,
+        'nik'        => $request->nik, 
+        'password'   => Hash::make($request->password),
+        'role'       => 'user',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    // 3. LOGIKA PENYAMBUNG (The Magic Part)
+    // Cek apakah NIPP ini sudah ada di tabel simpanan (hasil import CSV sebelumnya)
+    $dataExist = DB::table('simpanan')->where('nipp_asal', $request->nipp)->exists();
+
+    if ($dataExist) {
+        // Jika data gantung ada, hubungkan dengan anggota_id yang baru lahir
+        DB::table('simpanan')->where('nipp_asal', $request->nipp)->update(['anggota_id' => $anggotaId]);
+        DB::table('hutang')->where('nipp_asal', $request->nipp)->update(['anggota_id' => $anggotaId]);
+    } else {
+        // Jika data belum ada di CSV, buatkan baris saldo 0 biar dashboard gak error
+        DB::table('simpanan')->insert([
+            'anggota_id' => $anggotaId,
+            'nipp_asal'  => $request->nipp,
+            'tahun'      => date('Y'),
+            'pokok'      => 0, 'wajib' => 0, 'sukarela' => 0, 'total_simpanan' => 0,
+            'created_at' => now(),
+        ]);
+        DB::table('hutang')->insert([
+            'anggota_id'   => $anggotaId,
+            'nipp_asal'    => $request->nipp,
+            'tahun'        => date('Y'),
+            'saldo_hutang' => 0,
+            'created_at'   => now(),
+        ]);
+    }
+
+    return redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan login untuk melihat saldo Anda.');
+}
     public function showLogin() {
         // Jika sudah login, lempar langsung ke dashboard
         if (Auth::check()) {

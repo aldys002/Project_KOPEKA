@@ -13,49 +13,45 @@ class AnggotaSeeder extends Seeder
      */
     public function run(): void
 {
-    // --- TAMBAHKAN ADMIN DI SINI ---
-    \App\Models\User::updateOrCreate(
-        ['nipp' => 'admin'], // Cari berdasarkan NIPP admin
+    // 1. Admin tetap wajib ada
+    User::updateOrCreate(
+        ['nipp' => 'admin'],
         [
             'users'    => 'Administrator Kopeka',
-            'nipp'     => 'admin',
             'nik'      => '0000000000',
-            'password' => \Illuminate\Support\Facades\Hash::make('admin123'), // Password admin
+            'password' => Hash::make('admin123'),
             'role'     => 'admin',
         ]
     );
-        $file = database_path('seeders/anggota.csv');
-        $data = array_map('str_getcsv', file($file));
-        
-        // Buat hash sekali saja agar proses cepat
-        $passwordDefault = Hash::make('kai123');
 
-        $this->command->info("Sedang memasukkan 457 anggota...");
+    $file = database_path('seeders/anggota.csv');
+    if (!file_exists($file)) {
+        $this->command->error("File anggota.csv tidak ditemukan!");
+        return;
+    }
 
-        foreach ($data as $row) {
-            // 1. Lewati jika baris kosong
-            if (empty($row[0]) || empty($row[1])) {
-                continue;
-            }
+    $data = array_map('str_getcsv', file($file));
+    $passwordDefault = Hash::make('kai123');
 
-            // Bersihkan spasi
-            $nama = trim($row[0]);
-            $nipp = trim($row[1]);
+    foreach ($data as $row) {
+        if (empty($row[0]) || empty($row[1])) continue;
 
-            // 2. Lewati jika baris ini adalah header (tulisan "nama" atau "nipp")
-            if (strtolower($nipp) == 'nipp' || strtolower($nama) == 'nama') {
-                continue;
-            }
+        $nama = trim($row[0]);
+        $nipp = trim($row[1]);
 
-            User::create([
+        if (strtolower($nipp) == 'nipp') continue;
+
+        // Gunakan updateOrCreate supaya kalau seeder dijalankan lagi gak error Duplicate Entry
+        User::updateOrCreate(
+            ['nipp' => $nipp],
+            [
                 'users'    => $nama,
-                'nipp'     => $nipp,
-                'nik'      => isset($row[2]) ? trim($row[2]) : null,
+                'nik'      => $row[2] ?? null,
                 'password' => $passwordDefault,
                 'role'     => 'user',
-            ]);
-        }
-
-        $this->command->info("Seeding selesai! Data anggota berhasil diimport.");
+            ]
+        );
     }
+    $this->command->info("Seeding selesai!");
+}
 }

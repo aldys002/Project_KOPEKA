@@ -11,7 +11,7 @@ class KeuanganSeeder extends Seeder
 {
     public function run()
     {
-        // 1. Bersihkan tabel lama biar gak double
+        // 1. Bersihkan tabel lama biar gak double data
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('simpanan')->truncate();
         DB::table('hutang')->truncate();
@@ -28,57 +28,67 @@ class KeuanganSeeder extends Seeder
             foreach ($dataSimp as $index => $row) {
                 if (empty($row[0])) continue; // Skip baris kosong
 
-                $nippCsv = trim($row[0]);
+                $identityCsv = trim($row[0]); // Contoh: 171277
                 
-                // Cari apakah usernya SUDAH register?
-                $anggota = User::where('nipp', $nippCsv)->first();
+                /** * SOLUSI UNTUK RIZKY SUGIARTI:
+                 * Cari di tabel anggota, apakah 171277 ada di kolom NIPP atau NIK?
+                 */
+                $anggota = DB::table('anggota')
+                            ->where('nipp', $identityCsv)
+                            ->orWhere('nik', $identityCsv)
+                            ->first();
 
                 DB::table('simpanan')->insert([
-                    'anggota_id'     => $anggota ? $anggota->id : null, // Kalau belum ada, isi NULL
-                    'nipp_asal'      => $nippCsv, // KUNCI UTAMA buat register nanti
+                    'anggota_id'     => $anggota ? $anggota->id : null,
+                    'nipp_asal'      => $identityCsv, 
+                    'nik_asal'       => $identityCsv, // Backup identitas ke jembatan NIK
                     'tahun'          => $tahunAktif,
                     'pokok'          => $this->cleanNumber($row[1] ?? 0),
                     'wajib'          => $this->cleanNumber($row[2] ?? 0),
                     'sukarela'       => $this->cleanNumber($row[3] ?? 0),
                     'total_simpanan' => $this->cleanNumber($row[4] ?? 0),
                     'created_at'     => now(),
+                    'updated_at'     => now(),
                 ]);
             }
         }
 
         // --- PROSES DATA HUTANG ---
-    $pathHutang = database_path('seeders/hutang1.csv');
-    if (File::exists($pathHutang)) {
-        $dataHutangCsv = array_map('str_getcsv', file($pathHutang));
-        $this->command->info("Memproses data hutang sesuai dokumen...");
+        $pathHutang = database_path('seeders/hutang1.csv');
+        if (File::exists($pathHutang)) {
+            $dataHutangCsv = array_map('str_getcsv', file($pathHutang));
+            $this->command->info("Memproses data hutang...");
 
-        foreach ($dataHutangCsv as $indexH => $rowH) {
-            if (empty($rowH[0])) continue;
+            foreach ($dataHutangCsv as $indexH => $rowH) {
+                if (empty($rowH[0])) continue;
 
-            $nippCsv = trim($rowH[0]);
-            // Ambil nominal mentah dari kolom ke-2 (index 1) dan bersihkan formatnya
-            $nominal = $this->cleanNumber($rowH[1] ?? 0); 
+                $identityCsv = trim($rowH[0]);
+                $nominal = $this->cleanNumber($rowH[1] ?? 0); 
 
-            // Cari apakah usernya SUDAH register?
-            $anggota = DB::table('anggota')->where('nipp', $nippCsv)->first();
+                // Cari kecocokan di NIPP atau NIK
+                $anggota = DB::table('anggota')
+                            ->where('nipp', $identityCsv)
+                            ->orWhere('nik', $identityCsv)
+                            ->first();
 
-            DB::table('hutang')->insert([
-                'anggota_id'    => $anggota ? $anggota->id : null,
-                'nipp_asal'     => $nippCsv, 
-                'tahun'         => $tahunAktif,
-                'saldo_hutang'  => $nominal, // DISINI: Langsung masukin sesuai CSV
-                'created_at'    => now(),
-                'updated_at'    => now(),
-            ]);
+                DB::table('hutang')->insert([
+                    'anggota_id'    => $anggota ? $anggota->id : null,
+                    'nipp_asal'     => $identityCsv, 
+                    'nik_asal'      => $identityCsv, 
+                    'tahun'         => $tahunAktif,
+                    'saldo_hutang'  => $nominal,
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
+                ]);
+            }
         }
-    }
 
-        $this->command->info("Seeding Keuangan Selesai! Data gantung tersimpan via nipp_asal.");
+        $this->command->info("Seeding Selesai! Data Rizky (171277) sekarang terhubung via kolom NIK.");
     }
 
     private function cleanNumber($value) {
         if (!$value) return 0;
-        // Hapus titik/spasi agar jadi angka murni
+        // Hapus titik, spasi, atau koma agar jadi angka murni decimal
         $clean = str_replace(['.', ' ', ','], '', $value);
         return (float) $clean;
     }

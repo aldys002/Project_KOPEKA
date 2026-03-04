@@ -47,7 +47,7 @@ class AnggotaSeeder extends Seeder
         'nipp'     => $nipp,
         'nik'      => $nik,
         'users'    => $nama,
-        'password' => $passwordDefault,
+        'password' => null,
         'role'     => 'user',
     ]);
 }

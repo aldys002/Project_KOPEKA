@@ -88,52 +88,58 @@ class AdminController extends Controller
      * SIMPAN LAPORAN: Simpan data bulanan & Sync ke Saldo Utama
      */
     public function simpanBulanan(Request $request)
-    {
-        $tahun = $request->tahun;
-        $bulan = $request->bulan;
-        $dataInput = $request->input('data'); 
+{
+    $tahun = $request->tahun;
+    $bulan = $request->bulan;
+    $dataInput = $request->input('data'); 
 
-        if (!$dataInput) {
-            return redirect()->back()->withErrors(['error' => 'Tidak ada data yang dikirim.']);
-        }
+    if (!$dataInput) {
+        return redirect()->back()->withErrors(['error' => 'Tidak ada data yang dikirim.']);
+    }
 
-        foreach ($dataInput as $anggotaId => $nilai) {
-            // 1. Update/Create Transaksi Detail per Bulan
-            TransaksiBulanan::updateOrCreate(
-                ['anggota_id' => $anggotaId, 'bulan' => $bulan, 'tahun' => $tahun],
-                [
-                    'pokok'         => $nilai['pokok'] ?? 0,
-                    'wajib'         => $nilai['wajib'] ?? 0,
-                    'sukarela'      => $nilai['sukarela'] ?? 0,
-                    'bayar_hutang'  => $nilai['bayar_hutang'] ?? 0,
-                ]
-            );
+    foreach ($dataInput as $anggotaId => $nilai) {
+        // 1. Update History Bulanan
+        TransaksiBulanan::updateOrCreate(
+            ['anggota_id' => $anggotaId, 'bulan' => $bulan, 'tahun' => $tahun],
+            [
+                'pokok'        => $nilai['pokok'] ?? 0,
+                'wajib'        => $nilai['wajib'] ?? 0,
+                'sukarela'     => $nilai['sukarela'] ?? 0,
+                'saldo_hutang' => $nilai['saldo_hutang'] ?? 0, // PASTIKAN NAMA KOLOM INI BENAR
+            ]
+        );
 
-            // 2. HITUNG AKUMULASI
+        $user = User::find($anggotaId);
+        if ($user) {
+            // 2. Akumulasi Simpanan (Tetap seperti kodinganmu sebelumnya)
             $akumulasi = TransaksiBulanan::where('anggota_id', $anggotaId)
                 ->where('tahun', $tahun)
                 ->selectRaw('SUM(pokok) as p, SUM(wajib) as w, SUM(sukarela) as s')
                 ->first();
 
-            // 3. UPDATE SALDO UTAMA
-            $user = User::find($anggotaId);
-            if ($user) {
-                Simpanan::updateOrCreate(
-                    ['anggota_id' => $anggotaId, 'tahun' => $tahun],
-                    [
-                        'nipp'           => $user->nipp,
-                        'pokok'          => $akumulasi->p ?? 0,
-                        'wajib'          => $akumulasi->w ?? 0,
-                        'sukarela'       => $akumulasi->s ?? 0,
-                        'total_simpanan' => ($akumulasi->p ?? 0) + ($akumulasi->w ?? 0) + ($akumulasi->s ?? 0)
-                    ]
-                );
-            }
-        }
+            Simpanan::updateOrCreate(
+                ['anggota_id' => $anggotaId, 'tahun' => $tahun],
+                [
+                    'nipp'           => $user->nipp,
+                    'pokok'          => $akumulasi->p ?? 0,
+                    'wajib'          => $akumulasi->w ?? 0,
+                    'sukarela'       => $akumulasi->s ?? 0,
+                    'total_simpanan' => ($akumulasi->p ?? 0) + ($akumulasi->w ?? 0) + ($akumulasi->s ?? 0)
+                ]
+            );
 
-        return redirect()->back()->with('success', "Data bulan $bulan tahun $tahun berhasil disimpan!");
+            Hutang::updateOrCreate(
+                ['anggota_id' => $anggotaId, 'tahun' => $tahun],
+                [
+                    'nipp'         => $user->nipp,
+                    'saldo_hutang' => $nilai['saldo_hutang'] ?? 0, 
+                ]
+            );
+        }
     }
 
+    return redirect()->back()->with('success', "Laporan bulan $bulan tahun $tahun berhasil disinkronkan!");
+}
     /**
      * KELOLA SALDO: Menampilkan daftar anggota & total saldo pertahun
      * Diurutkan berdasarkan ID agar konsisten
@@ -223,4 +229,18 @@ class AdminController extends Controller
         $request->session()->regenerateToken();
         return redirect('/admin/login');
     }
+
+    public function hapusAnggota($id)
+{
+    $user = User::findOrFail($id);
+    
+    // Opsional: Hapus data terkait agar database bersih (Cascade Manual)
+    \App\Models\Simpanan::where('anggota_id', $id)->delete();
+    \App\Models\Hutang::where('anggota_id', $id)->delete();
+    \App\Models\TransaksiBulanan::where('anggota_id', $id)->delete();
+    
+    $user->delete();
+
+    return redirect()->back()->with('success', "Anggota {$user->users} dan seluruh data keuangannya telah dihapus!");
+}
 }

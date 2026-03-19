@@ -110,7 +110,7 @@
                             <th width="160">Pokok (Rp)</th>
                             <th width="160">Wajib (Rp)</th>
                             <th width="160">Sukarela (Rp)</th>
-                            <th width="160">Bayar Hutang (Rp)</th>
+                            <th width="160">Saldo Hutang (Rp)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -134,8 +134,8 @@
                                     class="input-money" value="{{ $t ? (int)$t->sukarela : 0 }}" min="0">
                             </td>
                             <td>
-                                <input type="number" name="data[{{ $u->id }}][bayar_hutang]" 
-                                    class="input-money" value="{{ $t ? (int)$t->bayar_hutang : 0 }}" min="0" 
+                                <input type="number" name="data[{{ $u->id }}][saldo_hutang]" 
+                                    class="input-money" value="{{ $t ? (int)$t->saldo_hutang : 0 }}" min="0" 
                                     style="background-color: #fff9e6; border-color: #f1c40f;">
                             </td>
                         </tr>

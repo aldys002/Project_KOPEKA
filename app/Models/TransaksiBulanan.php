@@ -19,7 +19,7 @@ class TransaksiBulanan extends Model
         'pokok',
         'wajib',
         'sukarela',
-        'bayar_hutang'
+        'saldo_hutang'
     ];
 
     public function user()

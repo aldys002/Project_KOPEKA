@@ -19,7 +19,7 @@ return new class extends Migration
     $table->decimal('pokok', 15, 2)->default(0);
     $table->decimal('wajib', 15, 2)->default(0);
     $table->decimal('sukarela', 15, 2)->default(0);
-    $table->decimal('bayar_hutang', 15, 2)->default(0); // Buat cicilan
+    $table->decimal('saldo_hutang', 15, 2)->default(0); 
     $table->timestamps();
 });
     }

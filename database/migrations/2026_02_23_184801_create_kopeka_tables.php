@@ -13,8 +13,9 @@ return new class extends Migration {
             $table->string('nipp', 50)->nullable(); 
             $table->string('nik', 50)->nullable();
             $table->string('users', 150); 
-            $table->string('password')->nullable();
+            $table->string('password')->nullable(); // Tetap NULL agar bisa aktivasi mandiri
             $table->string('role')->default('user');
+            $table->string('status')->default('aktif'); // Ditambahkan untuk status di dashboard
             $table->rememberToken();
             $table->timestamps();
         });
@@ -22,10 +23,10 @@ return new class extends Migration {
         // 2. Tabel Simpanan
         Schema::create('simpanan', function (Blueprint $table) {
             $table->id();
-            // Tetap pakai anggota_id untuk relasi database yang cepat
+            // Relasi ke tabel anggota
             $table->foreignId('anggota_id')->nullable()->constrained('anggota')->onDelete('cascade');
-            $table->string('nipp_asal')->nullable(); 
-            $table->string('nik_asal')->nullable(); // Ditambahkan buat jalur cadangan ambil data
+            $table->string('nipp')->nullable(); // Disinkronkan (sebelumnya nipp_asal)
+            $table->string('nik')->nullable();  // Disinkronkan (sebelumnya nik_asal)
             $table->integer('tahun');
             $table->decimal('pokok', 15, 2)->default(0);
             $table->decimal('wajib', 15, 2)->default(0);
@@ -38,14 +39,14 @@ return new class extends Migration {
         Schema::create('hutang', function (Blueprint $table) {
             $table->id();
             $table->foreignId('anggota_id')->nullable()->constrained('anggota')->onDelete('cascade');
-            $table->string('nipp_asal')->nullable(); 
-            $table->string('nik_asal')->nullable(); // Ditambahkan juga di sini
+            $table->string('nipp')->nullable(); // Disinkronkan
+            $table->string('nik')->nullable();  // Disinkronkan
             $table->integer('tahun');
             $table->decimal('saldo_hutang', 15, 2)->default(0);
             $table->timestamps();
         });
 
-        // 4. Tabel Password Reset & Sessions (Tetap Sama)
+        // 4. Tabel Password Reset & Sessions
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');

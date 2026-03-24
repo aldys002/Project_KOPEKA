@@ -11,6 +11,8 @@ class Simpanan extends Model
 
     protected $fillable = [
         'anggota_id',
+        'nipp',           // Tambahkan ini agar sinkron dengan migrasi
+        'nik',            // Tambahkan ini agar sinkron dengan migrasi
         'tahun',
         'pokok',
         'wajib',
@@ -18,6 +20,9 @@ class Simpanan extends Model
         'total_simpanan'
     ];
 
+    /**
+     * Relasi balik ke User (Anggota)
+     */
     public function anggota(): BelongsTo
     {
         return $this->belongsTo(User::class, 'anggota_id', 'id');

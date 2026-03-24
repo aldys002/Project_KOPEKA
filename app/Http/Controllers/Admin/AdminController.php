@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB; // Tambahkan ini untuk transaksi
 use App\Models\User;
 use App\Models\Hutang;
 use App\Models\Simpanan;
 use App\Models\TransaksiBulanan;
-use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -37,7 +37,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Dashboard Dinamis per Tahun
+     * Dashboard Ringkasan
      */
     public function dashboard(Request $request)
     {
@@ -48,6 +48,7 @@ class AdminController extends Controller
         $anggotaAktif  = User::where('role', 'user')->where('status', 'aktif')->count();
         $anggotaKeluar = User::where('role', 'user')->where('status', 'keluar')->count();
 
+        // Ambil totalan berdasarkan tahun aktif
         $totalPokok    = Simpanan::where('tahun', $tahunAktif)->sum('pokok');
         $totalWajib    = Simpanan::where('tahun', $tahunAktif)->sum('wajib');
         $totalSukarela = Simpanan::where('tahun', $tahunAktif)->sum('sukarela');
@@ -62,15 +63,89 @@ class AdminController extends Controller
     }
 
     /**
-     * LAPORAN BULANAN: Input Massal per Bulan
-     * Diurutkan berdasarkan ID agar sesuai CSV
+     * TAMBAH ANGGOTA LENGKAP: Simpan ke 3 Tabel Sekaligus
+     */
+    public function tambahAnggota(Request $request)
+    {
+        $request->validate([
+            'nipp'     => 'required|unique:anggota,nipp',
+            'users'    => 'required', 
+            'tahun'    => 'required|numeric',
+        ]);
+
+        try {
+            DB::transaction(function () use ($request) {
+                // 1. Buat Akun User (Password NULL agar bisa Aktivasi)
+                $user = User::create([
+                    'nipp'     => $request->nipp,
+                    'nik'      => $request->nik,
+                    'users'    => $request->users,
+                    'password' => null, 
+                    'role'     => 'user',
+                    'status'   => 'aktif',
+                ]);
+
+                // Bersihkan input angka dari format ribuan/Rp
+                $pokok    = $this->cleanNumber($request->pokok);
+                $wajib    = $this->cleanNumber($request->wajib);
+                $sukarela = $this->cleanNumber($request->sukarela);
+                $hutang   = $this->cleanNumber($request->saldo_hutang);
+
+                // 2. Buat Data Simpanan Awal
+                Simpanan::create([
+                    'anggota_id'     => $user->id,
+                    'nipp'           => $user->nipp,
+                    'tahun'          => $request->tahun,
+                    'pokok'          => $pokok,
+                    'wajib'          => $wajib,
+                    'sukarela'       => $sukarela,
+                    'total_simpanan' => $pokok + $wajib + $sukarela
+                ]);
+
+                // 3. Buat Data Hutang Awal
+                Hutang::create([
+                    'anggota_id'   => $user->id,
+                    'nipp'         => $user->nipp,
+                    'tahun'        => $request->tahun,
+                    'saldo_hutang' => $hutang
+                ]);
+            });
+
+            return redirect()->back()->with('success', "Anggota {$request->users} berhasil didaftarkan dan saldo awal telah masuk!");
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Gagal simpan data: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * KELOLA SALDO: Daftar Anggota per Tahun
+     */
+    public function listAnggota(Request $request)
+    {
+        $tahunAktif = $request->get('tahun', date('Y'));
+
+        // Gunakan with untuk memanggil data simpanan/hutang di tahun terpilih
+        $anggota = User::where('role', 'user')
+                    ->with(['simpanans' => function($q) use ($tahunAktif) {
+                        $q->where('tahun', $tahunAktif);
+                    }, 'hutangs' => function($q) use ($tahunAktif) {
+                        $q->where('tahun', $tahunAktif);
+                    }])
+                    ->orderBy('id', 'asc') 
+                    ->get();
+
+        return view('admin.anggota_index', compact('anggota', 'tahunAktif'));
+    }
+
+    /**
+     * Input Massal Laporan Bulanan (Input di Tabel Besar)
      */
     public function laporanBulanan(Request $request)
     {
         $tahunAktif = $request->get('tahun', date('Y'));
         $bulanAktif = $request->get('bulan', date('n'));
 
-        // PERBAIKAN: Tambah orderBy('id', 'asc')
         $anggota = User::where('role', 'user')
                     ->where('status', 'aktif')
                     ->orderBy('id', 'asc') 
@@ -84,100 +159,108 @@ class AdminController extends Controller
         return view('admin.laporan_bulanan', compact('anggota', 'tahunAktif', 'bulanAktif', 'transaksi'));
     }
 
-    /**
-     * SIMPAN LAPORAN: Simpan data bulanan & Sync ke Saldo Utama
-     */
     public function simpanBulanan(Request $request)
-{
-    $tahun = $request->tahun;
-    $bulan = $request->bulan;
-    $dataInput = $request->input('data'); 
+    {
+        $tahun = $request->tahun;
+        $bulan = $request->bulan;
+        $dataInput = $request->input('data'); 
 
-    if (!$dataInput) {
-        return redirect()->back()->withErrors(['error' => 'Tidak ada data yang dikirim.']);
-    }
+        if (!$dataInput) return redirect()->back()->withErrors(['error' => 'Tidak ada data.']);
 
-    foreach ($dataInput as $anggotaId => $nilai) {
-        // 1. Update History Bulanan
-        TransaksiBulanan::updateOrCreate(
-            ['anggota_id' => $anggotaId, 'bulan' => $bulan, 'tahun' => $tahun],
-            [
-                'pokok'        => $nilai['pokok'] ?? 0,
-                'wajib'        => $nilai['wajib'] ?? 0,
-                'sukarela'     => $nilai['sukarela'] ?? 0,
-                'saldo_hutang' => $nilai['saldo_hutang'] ?? 0, // PASTIKAN NAMA KOLOM INI BENAR
-            ]
-        );
+        try {
+            DB::transaction(function () use ($dataInput, $bulan, $tahun) {
+                foreach ($dataInput as $anggotaId => $nilai) {
+                    $p = $this->cleanNumber($nilai['pokok'] ?? 0);
+                    $w = $this->cleanNumber($nilai['wajib'] ?? 0);
+                    $s = $this->cleanNumber($nilai['sukarela'] ?? 0);
+                    $h = $this->cleanNumber($nilai['saldo_hutang'] ?? 0);
 
-        $user = User::find($anggotaId);
-        if ($user) {
-            // 2. Akumulasi Simpanan (Tetap seperti kodinganmu sebelumnya)
-            $akumulasi = TransaksiBulanan::where('anggota_id', $anggotaId)
-                ->where('tahun', $tahun)
-                ->selectRaw('SUM(pokok) as p, SUM(wajib) as w, SUM(sukarela) as s')
-                ->first();
+                    // 1. Update/Create Log Bulanan
+                    TransaksiBulanan::updateOrCreate(
+                        ['anggota_id' => $anggotaId, 'bulan' => $bulan, 'tahun' => $tahun],
+                        [
+                            'pokok'        => $p,
+                            'wajib'        => $w,
+                            'sukarela'     => $s,
+                            'saldo_hutang' => $h,
+                        ]
+                    );
 
-            Simpanan::updateOrCreate(
-                ['anggota_id' => $anggotaId, 'tahun' => $tahun],
-                [
-                    'nipp'           => $user->nipp,
-                    'pokok'          => $akumulasi->p ?? 0,
-                    'wajib'          => $akumulasi->w ?? 0,
-                    'sukarela'       => $akumulasi->s ?? 0,
-                    'total_simpanan' => ($akumulasi->p ?? 0) + ($akumulasi->w ?? 0) + ($akumulasi->s ?? 0)
-                ]
-            );
+                    $user = User::find($anggotaId);
+                    if ($user) {
+                        // 2. Hitung total akumulasi tahun ini untuk update tabel Simpanan
+                        $akumulasi = TransaksiBulanan::where('anggota_id', $anggotaId)
+                            ->where('tahun', $tahun)
+                            ->selectRaw('SUM(pokok) as p, SUM(wajib) as w, SUM(sukarela) as s')
+                            ->first();
 
-            Hutang::updateOrCreate(
-                ['anggota_id' => $anggotaId, 'tahun' => $tahun],
-                [
-                    'nipp'         => $user->nipp,
-                    'saldo_hutang' => $nilai['saldo_hutang'] ?? 0, 
-                ]
-            );
+                        Simpanan::updateOrCreate(
+                            ['anggota_id' => $anggotaId, 'tahun' => $tahun],
+                            [
+                                'nipp'           => $user->nipp,
+                                'pokok'          => $akumulasi->p ?? 0,
+                                'wajib'          => $akumulasi->w ?? 0,
+                                'sukarela'       => $akumulasi->s ?? 0,
+                                'total_simpanan' => ($akumulasi->p ?? 0) + ($akumulasi->w ?? 0) + ($akumulasi->s ?? 0)
+                            ]
+                        );
+
+                        // 3. Update Saldo Hutang Terakhir
+                        Hutang::updateOrCreate(
+                            ['anggota_id' => $anggotaId, 'tahun' => $tahun],
+                            [
+                                'nipp'         => $user->nipp,
+                                'saldo_hutang' => $h, 
+                            ]
+                        );
+                    }
+                }
+            });
+
+            return redirect()->back()->with('success', "Laporan bulan $bulan tahun $tahun berhasil disinkronkan!");
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
     }
 
-    return redirect()->back()->with('success', "Laporan bulan $bulan tahun $tahun berhasil disinkronkan!");
-}
     /**
-     * KELOLA SALDO: Menampilkan daftar anggota & total saldo pertahun
-     * Diurutkan berdasarkan ID agar konsisten
+     * Update Manual per Baris (Jika ada revisi satu orang)
      */
-    public function listAnggota(Request $request)
+    public function updateSimpananManual(Request $request)
     {
-        $tahunAktif = $request->get('tahun', date('Y'));
+        $user = User::where('nipp', $request->nipp)->first();
+        if (!$user) return redirect()->back()->withErrors(['error' => 'User tidak ditemukan.']);
 
-        // PERBAIKAN: Ubah pengurutan dari 'status' ke 'id'
-        $anggota = User::where('role', 'user')
-                    ->with(['simpanans' => function($q) use ($tahunAktif) {
-                        $q->where('tahun', $tahunAktif);
-                    }, 'hutangs' => function($q) use ($tahunAktif) {
-                        $q->where('tahun', $tahunAktif);
-                    }])
-                    ->orderBy('id', 'asc') 
-                    ->get();
+        $p = $this->cleanNumber($request->pokok);
+        $w = $this->cleanNumber($request->wajib);
+        $s = $this->cleanNumber($request->sukarela);
 
-        return view('admin.anggota_index', compact('anggota', 'tahunAktif'));
+        Simpanan::updateOrCreate(
+            ['anggota_id' => $user->id, 'tahun' => $request->tahun],
+            [
+                'nipp'           => $request->nipp,
+                'pokok'          => $p,
+                'wajib'          => $w,
+                'sukarela'       => $s,
+                'total_simpanan' => $p + $w + $s
+            ]
+        );
+        return redirect()->back()->with('success', "Simpanan anggota $request->nipp diperbarui!");
     }
 
-    public function tambahAnggota(Request $request)
+    public function updateHutangManual(Request $request)
     {
-        $request->validate([
-            'nipp'     => 'required|unique:anggota,nipp',
-            'users'    => 'required', 
-            'password' => 'required|min:6',
-        ]);
+        $user = User::where('nipp', $request->nipp)->first();
+        if (!$user) return redirect()->back()->withErrors(['error' => 'User tidak ditemukan.']);
 
-        User::create([
-            'nipp'     => $request->nipp,
-            'users'    => $request->users,
-            'password' => Hash::make($request->password),
-            'role'     => 'user',
-            'status'   => 'aktif',
-        ]);
-
-        return redirect()->back()->with('success', "Anggota baru berhasil didaftarkan!");
+        Hutang::updateOrCreate(
+            ['anggota_id' => $user->id, 'tahun' => $request->tahun],
+            [
+                'nipp'         => $request->nipp,
+                'saldo_hutang' => $this->cleanNumber($request->saldo_hutang)
+            ]
+        );
+        return redirect()->back()->with('success', "Hutang anggota $request->nipp diperbarui!");
     }
 
     public function toggleStatus($id)
@@ -185,41 +268,18 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
         $user->status = ($user->status == 'aktif') ? 'keluar' : 'aktif';
         $user->save();
-
-        return redirect()->back()->with('success', "Status anggota berhasil diperbarui!");
+        return redirect()->back()->with('success', "Status anggota {$user->users} diperbarui!");
     }
 
-    public function inputSimpanan(Request $request)
+    public function hapusAnggota($id)
     {
-        $user = User::where('nipp', $request->nipp)->first();
-        if (!$user) return redirect()->back()->withErrors(['error' => 'Anggota tidak ditemukan.']);
+        $user = User::findOrFail($id);
+        Simpanan::where('anggota_id', $id)->delete();
+        Hutang::where('anggota_id', $id)->delete();
+        TransaksiBulanan::where('anggota_id', $id)->delete();
+        $user->delete();
 
-        Simpanan::updateOrCreate(
-            ['anggota_id' => $user->id, 'tahun' => $request->tahun],
-            [
-                'nipp'           => $request->nipp,
-                'pokok'          => $request->pokok,
-                'wajib'          => $request->wajib,
-                'sukarela'       => $request->sukarela,
-                'total_simpanan' => (int)$request->pokok + (int)$request->wajib + (int)$request->sukarela
-            ]
-        );
-        return redirect()->back()->with('success', "Saldo manual berhasil diupdate!");
-    }
-
-    public function inputHutang(Request $request)
-    {
-        $user = User::where('nipp', $request->nipp)->first();
-        if (!$user) return redirect()->back()->withErrors(['error' => 'Anggota tidak ditemukan.']);
-
-        Hutang::updateOrCreate(
-            ['anggota_id' => $user->id, 'tahun' => $request->tahun],
-            [
-                'nipp'         => $request->nipp,
-                'saldo_hutang' => $request->saldo_hutang
-            ]
-        );
-        return redirect()->back()->with('success', "Data hutang berhasil disimpan!");
+        return redirect()->back()->with('success', "Data Anggota dihapus permanen dari sistem!");
     }
 
     public function logout(Request $request)
@@ -230,17 +290,13 @@ class AdminController extends Controller
         return redirect('/admin/login');
     }
 
-    public function hapusAnggota($id)
-{
-    $user = User::findOrFail($id);
-    
-    // Opsional: Hapus data terkait agar database bersih (Cascade Manual)
-    \App\Models\Simpanan::where('anggota_id', $id)->delete();
-    \App\Models\Hutang::where('anggota_id', $id)->delete();
-    \App\Models\TransaksiBulanan::where('anggota_id', $id)->delete();
-    
-    $user->delete();
-
-    return redirect()->back()->with('success', "Anggota {$user->users} dan seluruh data keuangannya telah dihapus!");
-}
+    /**
+     * Helper: Membersihkan format angka (titik, Rp, spasi)
+     */
+    private function cleanNumber($value) {
+        if (!$value) return 0;
+        if (is_numeric($value)) return (float) $value;
+        $clean = str_replace(['.', ',', 'Rp', ' ', 'rp'], '', $value);
+        return (float) $clean;
+    }
 }

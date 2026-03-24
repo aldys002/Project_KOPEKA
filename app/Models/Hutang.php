@@ -11,10 +11,15 @@ class Hutang extends Model
 
     protected $fillable = [
         'anggota_id',
+        'nipp',           // Tambahkan ini agar sinkron dengan migrasi
+        'nik',            // Tambahkan ini agar sinkron dengan migrasi
         'tahun',
         'saldo_hutang'
     ];
 
+    /**
+     * Relasi balik ke User (Anggota)
+     */
     public function anggota(): BelongsTo
     {
         return $this->belongsTo(User::class, 'anggota_id', 'id');

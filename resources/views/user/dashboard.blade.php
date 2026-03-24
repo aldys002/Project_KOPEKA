@@ -13,6 +13,7 @@
             --kai-orange: #ED6B23; 
             --kai-dark: #1a252f;
             --kai-gray: #f0f2f8; 
+            --commuter-red: #d1121d;
         }
         
         body { 
@@ -20,31 +21,30 @@
             font-family: 'Inter', sans-serif; 
         }
         
-        /* ===== NAVBAR ===== */
+        /* ===== NAVBAR (Updated to match Welcome Style) ===== */
         .navbar { 
             background-color: white !important; 
             border-bottom: 5px solid var(--kai-orange); 
-            padding: 8px 0;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            padding: 5px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        .navbar-brand img {
-            height: 65px;
-            width: auto;
-            object-fit: contain;
+        .navbar-brand-kai { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-decoration: none; 
         }
-        .brand-text {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: var(--kai-blue);
-            line-height: 1;
+        .navbar-brand-kai img { 
+            height: 80px; 
+            width: auto; 
+            margin-bottom: -25px; 
         }
-        .brand-text span {
-            color: var(--kai-orange);
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: block;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
+        .navbar-brand-kai span { 
+            font-size: 0.9rem; 
+            font-weight: 800; 
+            color: var(--commuter-red); 
+            font-style: italic; 
+            margin-left: 75px; 
         }
 
         /* ===== HERO SECTION ===== */
@@ -59,7 +59,6 @@
             align-items: center;
         }
 
-        /* Background image layer */
         .hero-bg {
             position: absolute;
             inset: 0;
@@ -68,7 +67,6 @@
             z-index: 0;
         }
 
-        /* Gradient overlay */
         .hero-bg::after {
             content: '';
             position: absolute;
@@ -115,7 +113,6 @@
             font-style: italic;
         }
 
-        /* Decorative train icon */
         .hero-deco {
             position: absolute;
             right: 40px;
@@ -222,16 +219,11 @@
 </head>
 <body>
 
-    <!-- NAVBAR -->
     <nav class="navbar navbar-light sticky-top mb-4">
         <div class="container d-flex justify-content-between align-items-center">
-            <a class="navbar-brand d-flex align-items-center gap-3" href="#">
-                <!-- Ganti src dengan path logo KAI kamu -->
+            <a class="navbar-brand-kai" href="#">
                 <img src="{{ asset('images/logo-kai-.png') }}" alt="Logo KAI">
-                <div class="brand-text">
-                    KOPEKA
-                    <span>Koperasi Rail Indonesia</span>
-                </div>
+                <span>KOPEKA</span>
             </a>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf 
@@ -244,7 +236,6 @@
 
     <div class="container pb-5">
 
-        <!-- HERO SECTION -->
         <div class="hero-section shadow-lg mb-4">
             <div class="hero-bg"></div>
             <i class="fas fa-train hero-deco"></i>
@@ -262,9 +253,7 @@
             </div>
         </div>
 
-        <!-- CARDS -->
         <div class="row g-4 mb-4">
-            <!-- Total Simpanan -->
             <div class="col-md-6">
                 <div class="card-kai">
                     <div class="card-header-kai">
@@ -276,7 +265,7 @@
                     <div class="p-4 text-center">
                         <p class="text-muted small mb-1 mt-2">Saldo Tersimpan</p>
                         <div class="card-amount text-dark">
-                            Rp {{ number_format($keuangan->total_simpanan, 0, ',', '.') }}
+                            Rp {{ number_format($keuangan->total_simpanan ?? 0, 0, ',', '.') }}
                         </div>
                         <a href="{{ route('user.simpanan') }}" class="btn-kai w-100 text-center">
                             <i class="fas fa-eye me-2"></i>Lihat Detail Simpanan
@@ -285,7 +274,6 @@
                 </div>
             </div>
 
-            <!-- Saldo Pinjaman -->
             <div class="col-md-6">
                 <div class="card-kai">
                     <div class="card-header-kai card-header-dark">
@@ -297,7 +285,7 @@
                     <div class="p-4 text-center">
                         <p class="text-muted small mb-1 mt-2">Total Hutang Aktif</p>
                         <div class="card-amount text-danger">
-                            Rp {{ number_format($keuangan->saldo_hutang, 0, ',', '.') }}
+                            Rp {{ number_format($keuangan->saldo_hutang ?? 0, 0, ',', '.') }}
                         </div>
                         <div class="alert alert-light border small text-muted rounded-3 mb-0">
                             <i class="fas fa-info-circle me-1 text-primary"></i> 
@@ -308,7 +296,6 @@
             </div>
         </div>
 
-        <!-- INFO STRIP -->
         <div class="info-strip d-flex align-items-center gap-3">
             <div style="width:48px; height:48px; background: rgba(0,51,153,0.08); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                 <i class="fas fa-calendar-check fa-lg text-primary"></i>

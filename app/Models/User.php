@@ -6,24 +6,30 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne; // Tambahkan ini
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    // Menentukan tabel anggota sebagai sumber data auth
     protected $table = 'anggota'; 
 
     protected $primaryKey = 'id';
     public $incrementing = true;
     protected $keyType = 'int';
 
+    /**
+     * Kolom yang boleh diisi secara massal.
+     * Pastikan 'status' ada di sini agar tersimpan di DB.
+     */
     protected $fillable = [
         'nipp',
-        'users', 
         'nik',
+        'users', 
         'password',
         'role',
+        'status', // Tambahkan ini agar tidak error saat create/update status
     ];
 
     protected $hidden = [
@@ -32,16 +38,14 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'password' => 'hashed',
+        'password' => 'hashed', // Laravel akan otomatis menghas password saat disimpan
     ];
 
     /**
-     * Relasi HasOne untuk Tabel (Dashboard Admin)
-     * Agar pemanggilan $row->simpanan di Blade tidak error
+     * Relasi HasOne (Data Tunggal)
      */
     public function simpanan(): HasOne
     {
-        // Kita ambil data simpanan (asumsi tahun terbaru atau data tunggal)
         return $this->hasOne(Simpanan::class, 'anggota_id', 'id');
     }
 
@@ -51,7 +55,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Relasi HasMany (Untuk riwayat simpanan tiap tahun)
+     * Relasi HasMany (Riwayat Tahunan)
      */
     public function simpanans(): HasMany
     {
@@ -64,14 +68,14 @@ class User extends Authenticatable
     }
 
     /**
-     * Helper untuk ambil data spesifik tahun
+     * Helper untuk mengambil data berdasarkan tahun tertentu
      */
-    public function simpananTahun($tahun = 2025)
+    public function simpananTahun($tahun = 2026)
     {
         return $this->simpanans()->where('tahun', $tahun)->first();
     }
 
-    public function hutangTahun($tahun = 2025)
+    public function hutangTahun($tahun = 2026)
     {
         return $this->hutangs()->where('tahun', $tahun)->first();
     }

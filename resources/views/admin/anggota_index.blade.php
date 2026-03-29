@@ -3,35 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Anggota {{ $tahunAktif }} - Admin Kopeka</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Daftar Anggota {{ $tahunAktif }} - Admin KOPEKA</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f4f7f6; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --ink:       #0A0E1A;
+            --muted:     #7A849E;
+            --border:    #E2E6F0;
+            --surface:   #F6F8FC;
+            --white:     #FFFFFF;
+            --orange:    #F05A22;
+            --blue:      #0033A0;
+            --blue-dk:   #001A5E;
+            --blue-lt:   rgba(0,51,160,0.07);
+            --green:     #1BA46A;
+            --red:       #E74C3C;
+            --yellow-lt: #FEF9E7;
+            --yellow:    #D4AC0D;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--surface);
+            color: var(--ink);
+            padding: 40px 24px;
+            -webkit-font-smoothing: antialiased;
+        }
+
         .container { max-width: 1300px; margin: 0 auto; }
-        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        .search-container { margin-bottom: 20px; position: relative; max-width: 500px; }
-        .search-container i { position: absolute; left: 15px; top: 12px; color: #bdc3c7; }
-        .search-input { width: 100%; padding: 10px 10px 10px 40px; border: 2px solid #3498db; border-radius: 25px; outline: none; box-sizing: border-box; transition: 0.3s; font-size: 14px; }
-        .table-responsive { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+
+        /* ── HEADER ── */
+        .header-flex { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end; 
+            margin-bottom: 40px; 
+            flex-wrap: wrap; 
+            gap: 20px; 
+        }
+
+        .header-flex h1 { 
+            font-family: 'Fraunces', serif; 
+            font-size: 36px; 
+            font-weight: 400; 
+            margin-bottom: 8px;
+        }
+        .header-flex h1 em { font-style: italic; color: var(--blue); }
+
+        .btn-back { 
+            color: var(--blue); 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 14px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            padding: 10px 20px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            background: var(--white);
+            transition: 0.2s;
+        }
+        .btn-back:hover { border-color: var(--blue); background: var(--blue-lt); }
+
+        /* ── SEARCH ── */
+        .search-container { margin-bottom: 30px; position: relative; max-width: 450px; }
+        .search-container i { position: absolute; left: 18px; top: 16px; color: var(--muted); }
+        .search-input { 
+            width: 100%; 
+            padding: 14px 14px 14px 48px; 
+            border: 1.5px solid var(--border); 
+            border-radius: 16px; 
+            outline: none; 
+            font-size: 15px; 
+            font-family: inherit;
+            transition: 0.3s; 
+        }
+        .search-input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px var(--blue-lt); }
+
+        /* ── TABLE ── */
+        .table-responsive { 
+            background: var(--white); 
+            border-radius: 24px; 
+            border: 1.5px solid var(--border);
+            overflow: hidden; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        th, td { padding: 12px 15px; border: 1px solid #e1e1e1; text-align: left; }
-        th { background-color: #2c3e50; color: white; font-size: 12px; text-transform: uppercase; }
-        tr.out-row { background-color: #fff5f5; opacity: 0.8; } 
-        .btn { padding: 8px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; border: none; font-weight: bold; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-edit { background-color: #f1c40f; color: #000; }
-        .btn-status { background-color: #34495e; color: white; }
-        .btn-aktif { background-color: #2ecc71; color: white; }
-        .btn-delete { background-color: #e74c3c; color: white; }
-        .btn-back { color: #3498db; border: 2px solid #3498db; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; }
-        .badge-status { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .bg-success { background: #d4edda; color: #155724; }
-        .bg-danger { background: #f8d7da; color: #721c24; }
-        .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
-        .modal-content { background: white; margin: 2% auto; padding: 25px; width: 450px; border-radius: 10px; position: relative; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        .btn-save { background-color: #27ae60; color: white; width: 100%; padding: 12px; margin-top: 10px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold; }
+        
+        th { 
+            background-color: #fafbfc; 
+            color: var(--muted); 
+            font-family: 'DM Mono', monospace;
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            padding: 20px 24px;
+            border-bottom: 1.5px solid var(--border);
+            text-align: left;
+        }
+
+        td { padding: 18px 24px; border-bottom: 1px solid var(--border); font-size: 14.5px; }
+        tr.out-row { background-color: #fcfcfd; }
+        tr.out-row td { opacity: 0.6; }
+
+        .nipp-badge { font-family: 'DM Mono', monospace; font-weight: 600; color: var(--blue); background: var(--blue-lt); padding: 4px 8px; border-radius: 6px; }
+        
+        .badge-status { 
+            padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 700; 
+            text-transform: uppercase; display: inline-block; margin-top: 4px;
+        }
+        .bg-success { background: #E6F6EC; color: var(--green); }
+        .bg-danger { background: #FDEDEC; color: var(--red); }
+
+        /* ── BUTTONS ── */
+        .btn-group { display: flex; gap: 8px; }
+        .btn-action { 
+            width: 38px; height: 38px; border-radius: 10px; border: none; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; 
+            transition: 0.2s; font-size: 14px;
+        }
+        .btn-edit-id { background: var(--yellow-lt); color: var(--yellow); }
+        .btn-edit-id:hover { background: #F9E79F; }
+        .btn-status { background: var(--blue-lt); color: var(--blue); }
+        .btn-aktif { background: #E6F6EC; color: var(--green); }
+        .btn-delete { background: #FDEDEC; color: var(--red); }
+        .btn-delete:hover { background: #FADBD8; }
+
+        /* ── MODAL ── */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(10, 14, 26, 0.7); backdrop-filter: blur(4px); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { 
+            background: var(--white); width: 100%; max-width: 420px; 
+            border-radius: 24px; padding: 40px; position: relative; 
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+
+        .modal-header h2 { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 400; margin-bottom: 20px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+        .form-group input { 
+            width: 100%; padding: 12px; border: 1.5px solid var(--border); 
+            border-radius: 12px; font-family: inherit; outline: none; transition: 0.2s;
+        }
+        .form-group input:focus { border-color: var(--blue); }
+        .form-group input:disabled { background: var(--surface); color: var(--muted); }
+
+        .btn-save { 
+            background: var(--blue); color: var(--white); width: 100%; 
+            padding: 14px; border: none; border-radius: 12px; 
+            font-weight: 600; cursor: pointer; margin-top: 10px; 
+        }
+
+        .alert-success {
+            padding: 16px 24px; background: #E6F6EC; color: var(--green);
+            border-radius: 16px; margin-bottom: 30px; border: 1px solid #D1F2DE;
+            display: flex; align-items: center; gap: 12px; font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -39,16 +172,18 @@
 <div class="container">
     <div class="header-flex">
         <div>
-            <h1 style="margin:0;"><i class="fas fa-users-cog"></i> Manajemen Anggota</h1>
-            <span style="background: #e67e22; color: white; padding: 3px 10px; border-radius: 15px; font-size: 14px;">Tahun Buku: {{ $tahunAktif }}</span>
+            <h1>Manajemen <em>Anggota</em></h1>
+            <span style="font-family: 'DM Mono', monospace; font-size: 12px; background: var(--orange); color: white; padding: 5px 12px; border-radius: 20px;">
+                TAHUN BUKU {{ $tahunAktif }}
+            </span>
         </div>
         <a href="{{ route('admin.dashboard', ['tahun' => $tahunAktif]) }}" class="btn-back">
-            <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+            <i class="fas fa-arrow-left"></i> Kembali
         </a>
     </div>
 
     @if(session('success'))
-        <div style="padding: 15px; background: #d4edda; color: #155724; border-radius: 5px; margin-bottom: 20px; border-left: 5px solid #28a745;">
+        <div class="alert-success">
             <i class="fas fa-check-circle"></i> {{ session('success') }}
         </div>
     @endif
@@ -63,13 +198,13 @@
             <thead>
                 <tr>
                     <th>NIPP</th>
-                    <th>Nama Anggota</th>
-                    <th>S. Pokok</th>
-                    <th>S. Wajib</th>
-                    <th>S. Sukarela</th>
-                    <th>Total Simpanan</th>
-                    <th>Saldo Hutang</th>
-                    <th>Aksi</th>
+                    <th>Nama Anggota / NIK</th>
+                    <th>Pokok</th>
+                    <th>Wajib</th>
+                    <th>Sukarela</th>
+                    <th style="color: var(--green);">Total Simpanan</th>
+                    <th style="color: var(--orange);">Hutang</th>
+                    <th style="text-align: center;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -80,36 +215,38 @@
                     $isOut = $row->status == 'keluar';
                 @endphp
                 <tr class="data-row {{ $isOut ? 'out-row' : '' }}">
-                    <td class="nipp-cell"><strong>{{ $row->nipp }}</strong></td>
-                    <td class="nama-cell">
-                        <div style="font-weight: bold;">{{ $row->users }}</div>
+                    <td><span class="nipp-badge">{{ $row->nipp }}</span></td>
+                    <td>
+                        <div style="font-weight: 600; color: var(--ink);">{{ $row->users }}</div>
+                        <div style="font-size: 11px; color: var(--muted);">NIK: {{ $row->nik ?? '-' }}</div>
                         <span class="badge-status {{ $isOut ? 'bg-danger' : 'bg-success' }}">
                             {{ $isOut ? 'Keluar' : 'Aktif' }}
                         </span>
                     </td>
-                    <td>Rp {{ number_format($simpanan->pokok ?? 0, 0, ',', '.') }}</td>
-                    <td>Rp {{ number_format($simpanan->wajib ?? 0, 0, ',', '.') }}</td>
-                    <td>Rp {{ number_format($simpanan->sukarela ?? 0, 0, ',', '.') }}</td>
-                    <td style="color: #27ae60; font-weight: bold;">Rp {{ number_format($simpanan->total_simpanan ?? 0, 0, ',', '.') }}</td>
-                    <td style="color: #e74c3c; font-weight: bold;">Rp {{ number_format($hutang->saldo_hutang ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ number_format($simpanan->pokok ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ number_format($simpanan->wajib ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ number_format($simpanan->sukarela ?? 0, 0, ',', '.') }}</td>
+                    <td style="color: var(--green); font-weight: 600;">{{ number_format($simpanan->total_simpanan ?? 0, 0, ',', '.') }}</td>
+                    <td style="color: var(--orange); font-weight: 600;">{{ number_format($hutang->saldo_hutang ?? 0, 0, ',', '.') }}</td>
                     <td>
-                        <div style="display: flex; gap: 5px;">
-                            <button class="btn btn-edit" onclick="openModal('{{ $row->nipp }}', '{{ addslashes($row->users) }}', {{ $simpanan->pokok ?? 0 }}, {{ $simpanan->wajib ?? 0 }}, {{ $simpanan->sukarela ?? 0 }}, {{ $hutang->saldo_hutang ?? 0 }})">
-                                <i class="fas fa-edit"></i>
+                        <div class="btn-group" style="justify-content: center;">
+                            <button class="btn-action btn-edit-id" title="Edit Nama/NIK" 
+                                onclick="openEditModal({{ $row->id }}, '{{ $row->nipp }}', '{{ addslashes($row->users) }}', '{{ $row->nik }}')">
+                                <i class="fas fa-user-edit"></i>
                             </button>
 
                             <form action="{{ route('admin.toggle.status', $row->id) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn {{ $isOut ? 'btn-aktif' : 'btn-status' }}">
+                                <button type="submit" class="btn-action {{ $isOut ? 'btn-aktif' : 'btn-status' }}" title="Ubah Status">
                                     <i class="fas {{ $isOut ? 'fa-user-check' : 'fa-user-slash' }}"></i>
                                 </button>
                             </form>
 
-                            <form action="{{ route('admin.anggota.hapus', $row->id) }}" method="POST" onsubmit="return confirm('PERINGATAN: Menghapus anggota akan menghapus seluruh saldo & riwayat bulanan secara permanen! Lanjutkan?')">
+                            <form action="{{ route('admin.anggota.hapus', $row->id) }}" method="POST" onsubmit="return confirm('Hapus permanen?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-delete">
-                                    <i class="fas fa-trash"></i>
+                                <button type="submit" class="btn-action btn-delete" title="Hapus Permanen">
+                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
                         </div>
@@ -121,44 +258,35 @@
     </div>
 </div>
 
-{{-- MODAL EDIT SALDO --}}
-<div id="modalEdit" class="modal">
+<div id="modalEditIdentitas" class="modal">
     <div class="modal-content">
-        <span style="float:right; cursor:pointer; font-size:24px;" onclick="closeModal()">&times;</span>
-        <h2 id="modalName">Nama Anggota</h2>
-        <p id="modalNipp" style="color: #666;"></p>
+        <div class="modal-header">
+            <h2>Edit Identitas</h2>
+        </div>
         
-        <form action="{{ route('admin.simpanan.update') }}" method="POST">
+        <form action="{{ route('admin.anggota.update.identitas') }}" method="POST">
             @csrf
-            <input type="hidden" name="nipp" id="form_nipp_simpanan">
-            <input type="hidden" name="tahun" value="{{ $tahunAktif }}">
+            <input type="hidden" name="id" id="edit_id">
+            
             <div class="form-group">
-                <label>Pokok</label>
-                <input type="number" name="pokok" id="form_pokok">
+                <label>NIPP (Tidak Bisa Diubah)</label>
+                <input type="text" id="edit_nipp" disabled>
             </div>
+
             <div class="form-group">
-                <label>Wajib</label>
-                <input type="number" name="wajib" id="form_wajib">
+                <label>Nama Anggota</label>
+                <input type="text" name="users" id="edit_nama" required>
             </div>
+
             <div class="form-group">
-                <label>Sukarela</label>
-                <input type="number" name="sukarela" id="form_sukarela">
+                <label>NIK</label>
+                <input type="text" name="nik" id="edit_nik">
             </div>
-            <button type="submit" class="btn btn-save">Update Simpanan</button>
+
+            <button type="submit" class="btn-save">Simpan Perubahan</button>
         </form>
 
-        <hr style="margin:20px 0; border:1px dashed #eee;">
-
-        <form action="{{ route('admin.hutang.update') }}" method="POST">
-            @csrf
-            <input type="hidden" name="nipp" id="form_nipp_hutang">
-            <input type="hidden" name="tahun" value="{{ $tahunAktif }}">
-            <div class="form-group">
-                <label>Saldo Hutang Saat Ini</label>
-                <input type="number" name="saldo_hutang" id="form_hutang">
-            </div>
-            <button type="submit" class="btn btn-save" style="background: #e67e22;">Update Hutang</button>
-        </form>
+        <button onclick="closeModal()" style="width: 100%; background: none; border: none; color: var(--muted); margin-top: 15px; cursor: pointer; font-size: 13px;">Batal</button>
     </div>
 </div>
 
@@ -171,18 +299,22 @@
             rows[i].style.display = txt.indexOf(input) > -1 ? "" : "none";
         }
     }
-    function openModal(nipp, nama, p, w, s, h) {
-        document.getElementById('modalEdit').style.display = 'block';
-        document.getElementById('modalName').innerText = nama;
-        document.getElementById('modalNipp').innerText = 'NIPP: ' + nipp;
-        document.getElementById('form_nipp_simpanan').value = nipp;
-        document.getElementById('form_nipp_hutang').value = nipp;
-        document.getElementById('form_pokok').value = p;
-        document.getElementById('form_wajib').value = w;
-        document.getElementById('form_sukarela').value = s;
-        document.getElementById('form_hutang').value = h;
+
+    function openEditModal(id, nipp, nama, nik) {
+        document.getElementById('modalEditIdentitas').style.display = 'flex';
+        document.getElementById('edit_id').value = id;
+        document.getElementById('edit_nipp').value = nipp;
+        document.getElementById('edit_nama').value = nama;
+        document.getElementById('edit_nik').value = (nik === 'null' || nik === '') ? '' : nik;
     }
-    function closeModal() { document.getElementById('modalEdit').style.display = 'none'; }
+
+    function closeModal() { 
+        document.getElementById('modalEditIdentitas').style.display = 'none'; 
+    }
+    
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('modalEditIdentitas')) closeModal();
+    }
 </script>
 </body>
 </html>

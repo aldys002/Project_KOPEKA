@@ -38,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
         // Manajemen Anggota
         Route::get('/anggota', [AdminController::class, 'listAnggota'])->name('admin.anggota.index');
         Route::post('/anggota/tambah', [AdminController::class, 'tambahAnggota'])->name('admin.anggota.tambah');
+        Route::post('/anggota/update-identitas', [AdminController::class, 'updateIdentitas'])->name('admin.anggota.update.identitas');
         
         // Toggle Status (Sesuaikan name dengan yang ada di controller/blade)
         Route::post('/anggota/status/{id}', [AdminController::class, 'toggleStatus'])->name('admin.toggle.status');

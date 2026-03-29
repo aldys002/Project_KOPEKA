@@ -3,46 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Bulanan - KOPEKA</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Laporan Bulanan - Admin KOPEKA</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f4f7f6; color: #2c3e50; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 5px solid #3498db; }
-        .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-        .title-section h1 { margin: 0; font-size: 24px; color: #2c3e50; }
-        .title-section p { margin: 5px 0 0; color: #7f8c8d; font-size: 14px; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .controls-row { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
-       .search-container { margin-bottom: 20px; position: relative; max-width: 500px; }
-        .search-container i { position: absolute; left: 15px; top: 12px; color: #bdc3c7; }
-        .search-input { 
-            width: 100%; padding: 10px 10px 10px 40px; border: 2px solid #3498db; 
-            border-radius: 25px; outline: none; box-sizing: border-box; transition: 0.3s; 
-            font-size: 14px;
+        :root {
+            --ink:       #0A0E1A;
+            --muted:     #7A849E;
+            --border:    #E2E6F0;
+            --surface:   #F6F8FC;
+            --white:     #FFFFFF;
+            --orange:    #F05A22;
+            --blue:      #0033A0;
+            --blue-lt:   rgba(0,51,160,0.07);
+            --green:     #1BA46A;
+            --green-lt:  #E6F6EC;
         }
-        .search-input:focus { box-shadow: 0 0 8px rgba(52, 152, 219, 0.3); }
 
-        .filter-box { display: flex; gap: 10px; background: #ebf5fb; padding: 8px 15px; border-radius: 25px; align-items: center; }
-        .form-control { padding: 8px 12px; border: 1px solid #dcdde1; border-radius: 6px; font-size: 14px; outline: none; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--surface);
+            color: var(--ink);
+            padding: 40px 24px;
+            -webkit-font-smoothing: antialiased;
+        }
 
-        .alert-info { background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #17a2b8; font-size: 14px; }
+        .container { max-width: 1200px; margin: 0 auto; }
 
-        .table-responsive { overflow-x: auto; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th { background-color: #f8f9fa; color: #34495e; font-weight: bold; text-transform: uppercase; font-size: 11px; padding: 15px; border-bottom: 2px solid #dee2e6; text-align: left; }
-        td { padding: 12px 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
-        tr:hover { background-color: #fdfdfd; }
-        .no-result { display: none; text-align: center; padding: 20px; color: #e74c3c; font-weight: bold; background: #fff; border: 1px solid #eee; }
+        /* ── HEADER ── */
+        .btn-back { 
+            color: var(--blue); text-decoration: none; font-weight: 600; font-size: 14px; 
+            display: inline-flex; align-items: center; gap: 8px; margin-bottom: 24px;
+        }
 
-        .input-money { width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px; text-align: right; font-family: 'Courier New', Courier, monospace; font-weight: bold; }
-        .input-money:focus { background-color: #fff; border-color: #2ecc71; box-shadow: 0 0 5px rgba(46, 204, 113, 0.3); outline: none; }
+        .card { 
+            background: var(--white); border-radius: 24px; border: 1.5px solid var(--border);
+            padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
 
-        .btn-save { background: #27ae60; color: white; padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; margin-top: 25px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-save:hover { background: #219150; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .header-area { 
+            display: flex; justify-content: space-between; align-items: flex-start; 
+            margin-bottom: 32px; flex-wrap: wrap; gap: 24px; 
+        }
 
-        .btn-back { text-decoration: none; color: #3498db; font-size: 14px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; }
-        .nipp-badge { background: #f1f2f6; color: #57606f; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+        .title-section h1 { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 400; margin-bottom: 4px; }
+        .title-section p { color: var(--muted); font-size: 15px; }
+
+        /* ── FILTERS ── */
+        .filter-box { 
+            display: flex; gap: 12px; background: #fafbfc; padding: 12px 20px; 
+            border-radius: 16px; border: 1.5px solid var(--border); align-items: center;
+        }
+        .form-select { 
+            padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; 
+            font-family: inherit; font-size: 14px; outline: none; background: white; cursor: pointer;
+        }
+
+        .search-container { margin-bottom: 24px; position: relative; max-width: 400px; }
+        .search-container i { position: absolute; left: 16px; top: 14px; color: var(--muted); }
+        .search-input { 
+            width: 100%; padding: 12px 12px 12px 44px; border: 1.5px solid var(--border); 
+            border-radius: 14px; outline: none; font-family: inherit; transition: 0.2s;
+        }
+        .search-input:focus { border-color: var(--blue); }
+
+        /* ── TABLE ── */
+        .alert-info { 
+            background: var(--blue-lt); color: var(--blue); padding: 16px 20px; 
+            border-radius: 14px; margin-bottom: 24px; font-size: 14px; display: flex; align-items: center; gap: 10px;
+        }
+
+        .table-responsive { border-radius: 16px; border: 1.5px solid var(--border); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        
+        th { 
+            background: #fafbfc; padding: 16px 20px; font-family: 'DM Mono', monospace; 
+            font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
+            border-bottom: 1.5px solid var(--border); text-align: left;
+        }
+
+        td { padding: 14px 20px; border-bottom: 1px solid var(--border); }
+        
+        .nipp-badge { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+
+        /* ── MONEY INPUT ── */
+        .input-money { 
+            width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); 
+            border-radius: 8px; text-align: right; font-family: 'DM Mono', monospace; 
+            font-size: 14px; transition: 0.2s; background: #fdfdfd;
+        }
+        .input-money:focus { 
+            background: white; border-color: var(--green); outline: none; 
+            box-shadow: 0 0 0 4px rgba(27, 164, 106, 0.1); 
+        }
+        .input-debt { border-color: #FFE5D9; background: #FFF9F6; }
+        .input-debt:focus { border-color: var(--orange); box-shadow: 0 0 0 4px rgba(240, 90, 34, 0.1); }
+
+        /* ── BUTTON SAVE ── */
+        .btn-save { 
+            background: var(--blue); color: var(--white); padding: 18px; 
+            border: none; border-radius: 16px; cursor: pointer; font-size: 15px; 
+            font-weight: 600; width: 100%; margin-top: 32px; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            box-shadow: 0 10px 20px rgba(0, 51, 160, 0.15);
+        }
+        .btn-save:hover { background: var(--blue-dk); transform: translateY(-2px); }
+        
+        .no-result { display: none; text-align: center; padding: 40px; color: var(--muted); font-style: italic; }
     </style>
 </head>
 <body>
@@ -55,24 +126,24 @@
     <div class="card">
         <div class="header-area">
             <div class="title-section">
-                <h1><i class="fas fa-edit text-primary"></i> Laporan Bulanan & Setoran</h1>
-                <p>Input data simpanan dan cicilan anggota per periode bulan.</p>
+                <h1>Laporan <em>Bulanan</em></h1>
+                <p>Input data simpanan dan cicilan anggota periode ini.</p>
             </div>
 
             <div class="filter-box">
-                <i class="fas fa-calendar-alt text-primary"></i>
-                <form action="{{ route('admin.laporan.bulanan') }}" method="GET" style="display: flex; gap: 10px;">
-                    <select name="bulan" class="form-control" onchange="this.form.submit()">
+                <i class="fas fa-calendar-alt" style="color: var(--blue);"></i>
+                <form action="{{ route('admin.laporan.bulanan') }}" method="GET" style="display: flex; gap: 8px;">
+                    <select name="bulan" class="form-select" onchange="this.form.submit()">
                         @for($m=1; $m<=12; $m++)
                             <option value="{{ $m }}" {{ (int)$bulanAktif == $m ? 'selected' : '' }}>
                                 {{ \Carbon\Carbon::create()->month((int)$m)->translatedFormat('F') }}
                             </option>
                         @endfor
                     </select>
-                    <select name="tahun" class="form-control" onchange="this.form.submit()">
-                        @foreach(range(2025, date('Y') + 5) as $th)
+                    <select name="tahun" class="form-select" onchange="this.form.submit()">
+                        @foreach(range(2025, date('Y') + 2) as $th)
                             <option value="{{ $th }}" {{ (int)$tahunAktif == $th ? 'selected' : '' }}>
-                                Tahun {{ $th }}
+                                {{ $th }}
                             </option>
                         @endforeach
                     </select>
@@ -88,11 +159,11 @@
 
         <div class="alert-info">
             <i class="fas fa-info-circle"></i> 
-            <strong>Informasi:</strong> Data bulan <strong>{{ \Carbon\Carbon::create()->month((int)$bulanAktif)->translatedFormat('F') }} {{ $tahunAktif }}</strong> akan diupdate.
+            <span>Mengupdate data untuk periode <strong>{{ \Carbon\Carbon::create()->month((int)$bulanAktif)->translatedFormat('F') }} {{ $tahunAktif }}</strong></span>
         </div>
 
         @if(session('success'))
-            <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+            <div style="background: var(--green-lt); color: var(--green); padding: 16px; border-radius: 12px; margin-bottom: 24px; font-weight: 500;">
                 <i class="fas fa-check-circle"></i> {{ session('success') }}
             </div>
         @endif
@@ -106,20 +177,20 @@
                 <table id="transaksiTable">
                     <thead>
                         <tr>
-                            <th>Identitas Anggota</th>
-                            <th width="160">Pokok (Rp)</th>
-                            <th width="160">Wajib (Rp)</th>
-                            <th width="160">Sukarela (Rp)</th>
-                            <th width="160">Saldo Hutang (Rp)</th>
+                            <th style="width: 300px;">Anggota</th>
+                            <th>Pokok</th>
+                            <th>Wajib</th>
+                            <th>Sukarela</th>
+                            <th style="color: var(--orange);">Saldo Hutang</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($anggota as $u)
                         @php $t = $transaksi[$u->id] ?? null; @endphp
                         <tr class="data-row">
-                            <td class="nama-wrapper">
-                                <div class="nama-cell" style="font-weight: bold; color: #2c3e50;">{{ $u->users }}</div>
-                                <span class="nipp-badge nipp-cell">NIPP: {{ $u->nipp }}</span>
+                            <td>
+                                <div class="nama-cell" style="font-weight: 600; color: var(--ink);">{{ $u->users }}</div>
+                                <span class="nipp-badge nipp-cell">{{ $u->nipp }}</span>
                             </td>
                             <td>
                                 <input type="number" name="data[{{ $u->id }}][pokok]" 
@@ -135,29 +206,27 @@
                             </td>
                             <td>
                                 <input type="number" name="data[{{ $u->id }}][saldo_hutang]" 
-                                    class="input-money" value="{{ $t ? (int)$t->saldo_hutang : 0 }}" min="0" 
-                                    style="background-color: #fff9e6; border-color: #f1c40f;">
+                                    class="input-money input-debt" value="{{ $t ? (int)$t->saldo_hutang : 0 }}" min="0">
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
                 <div id="noData" class="no-result">
-                    <i class="fas fa-search-minus"></i> Data anggota tidak ditemukan...
+                    <i class="fas fa-search-minus"></i> Anggota tidak ditemukan...
                 </div>
             </div>
 
             <button type="submit" class="btn-save">
-                <i class="fas fa-save"></i> SIMPAN SEMUA DATA BULAN {{ strtoupper(\Carbon\Carbon::create()->month((int)$bulanAktif)->translatedFormat('F')) }}
+                <i class="fas fa-save"></i> SIMPAN DATA {{ strtoupper(\Carbon\Carbon::create()->month((int)$bulanAktif)->translatedFormat('F')) }}
             </button>
         </form>
     </div>
 </div>
 
 <script>
-    function filterTable() {
-        let input = document.getElementById("searchInput");
-        let filter = input.value.toUpperCase();
+    function cariAnggota() {
+        let input = document.getElementById("inputCariAnggota").value.toUpperCase();
         let table = document.getElementById("transaksiTable");
         let tr = table.getElementsByClassName("data-row");
         let noData = document.getElementById("noData");
@@ -171,7 +240,7 @@
                 let textNipp = tdNipp.textContent || tdNipp.innerText;
                 let textNama = tdNama.textContent || tdNama.innerText;
                 
-                if (textNipp.toUpperCase().indexOf(filter) > -1 || textNama.toUpperCase().indexOf(filter) > -1) {
+                if (textNipp.toUpperCase().indexOf(input) > -1 || textNama.toUpperCase().indexOf(input) > -1) {
                     tr[i].style.display = "";
                     count++;
                 } else {

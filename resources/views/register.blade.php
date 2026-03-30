@@ -17,6 +17,11 @@
         .form-control:focus { border-color: var(--kai-blue); box-shadow: none; }
         .input-group-text { border-radius: 10px 0 0 10px; background-color: #f8f9fa; }
         .form-identity { border-radius: 0 10px 10px 0 !important; }
+        
+        /* Style Tambahan untuk Validasi */
+        .is-invalid { border-color: #dc3545 !important; }
+        .password-requirements { font-size: 0.75rem; color: #6c757d; margin-top: 5px; }
+        .requirement.valid { color: #198754; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -31,7 +36,7 @@
                     </div>
                     <div class="card-body p-4 p-md-5 bg-white">
                         
-                        {{-- Alert Error --}}
+                        {{-- Alert Error Umum --}}
                         @if($errors->has('error'))
                             <div class="alert alert-danger border-0 small shadow-sm mb-4">
                                 <i class="fas fa-exclamation-triangle me-2"></i> {{ $errors->first('error') }}
@@ -39,14 +44,14 @@
                         @endif
 
                         {{-- Form Register/Aktivasi --}}
-                        <form action="{{ route('register.submit') }}" method="POST">
+                        <form action="{{ route('register.submit') }}" method="POST" id="registerForm">
                             @csrf 
 
                             <div class="mb-3">
                                 <label class="form-label small fw-bold text-uppercase">Nama Lengkap (Sesuai Data Koperasi)</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-user text-muted"></i></span>
-                                    <input type="text" name="nama_anggota" class="form-control" 
+                                    <input type="text" name="nama_anggota" class="form-control @error('nama_anggota') is-invalid @enderror" 
                                            placeholder="Contoh: Zubaedah" value="{{ old('nama_anggota') }}" required>
                                 </div>
                                 @error('nama_anggota') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
@@ -56,11 +61,8 @@
                                 <label class="form-label small fw-bold text-uppercase">NIPP atau NIK</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-id-card text-muted"></i></span>
-                                    <input type="text" name="identity" class="form-control form-identity" 
+                                    <input type="text" name="identity" class="form-control form-identity @error('identity') is-invalid @enderror" 
                                            placeholder="Masukkan NIPP atau NIK" value="{{ old('identity') }}" required>
-                                </div>
-                                <div class="form-text mt-1" style="font-size: 0.75rem;">
-                                    <i class="fas fa-info-circle me-1"></i> Gunakan salah satu identitas yang terdaftar pada sistem.
                                 </div>
                                 @error('identity') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                             </div>
@@ -71,8 +73,12 @@
                                 <label class="form-label small fw-bold text-uppercase">Password Baru</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-lock text-muted"></i></span>
-                                    <input type="password" name="password" class="form-control" 
+                                    <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" 
                                            placeholder="Minimal 8 karakter" required>
+                                </div>
+                                <div class="password-requirements" id="passwordRequirements">
+                                    <div id="req-length"><i class="fas fa-circle me-1"></i> Minimal 8 karakter</div>
+                                    <div id="req-alpha"><i class="fas fa-circle me-1"></i> Kombinasi huruf dan angka</div>
                                 </div>
                                 @error('password') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                             </div>
@@ -105,5 +111,36 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Simple client-side feedback for password rules
+        const password = document.getElementById('password');
+        const reqLength = document.getElementById('req-length');
+        const reqAlpha = document.getElementById('req-alpha');
+
+        password.addEventListener('input', function() {
+            const val = this.value;
+            
+            // Validate Length
+            if (val.length >= 8) {
+                reqLength.classList.add('valid');
+                reqLength.querySelector('i').className = 'fas fa-check-circle me-1';
+            } else {
+                reqLength.classList.remove('valid');
+                reqLength.querySelector('i').className = 'fas fa-circle me-1';
+            }
+
+            // Validate Alpha + Numeric
+            const hasLetter = /[a-zA-Z]/.test(val);
+            const hasNumber = /[0-9]/.test(val);
+            if (hasLetter && hasNumber) {
+                reqAlpha.classList.add('valid');
+                reqAlpha.querySelector('i').className = 'fas fa-check-circle me-1';
+            } else {
+                reqAlpha.classList.remove('valid');
+                reqAlpha.querySelector('i').className = 'fas fa-circle me-1';
+            }
+        });
+    </script>
 </body>
 </html>

@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+// Import rule Password untuk validasi yang lebih kuat
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {   
@@ -22,10 +24,14 @@ class AuthController extends Controller
         $request->validate([
             'nama_anggota' => 'required|string|max:150',
             'identity'     => 'required', 
-            'password'     => 'required|min:8|confirmed',
+            'password'     => [
+                'required',
+                'confirmed',
+                // Perbaikan: Minimal 8 karakter, wajib ada huruf, wajib ada angka
+                Password::min(8)->letters()->numbers(),
+            ],
         ], [
             'password.confirmed' => 'Konfirmasi password tidak sesuai.',
-            'password.min'       => 'Password minimal harus 8 karakter.'
         ]);
 
         $identity = trim($request->identity);

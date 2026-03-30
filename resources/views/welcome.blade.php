@@ -205,9 +205,9 @@
         .card-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 15px; color: #fff; }
         .card-text { color: var(--text-muted); font-size: 0.95rem; }
 
-        /* ===== FOOTER UPDATE (REFERENSI SS) ===== */
+        /* ===== FOOTER ===== */
         .main-footer {
-            background: #080a0d; /* Biru sangat gelap sesuai Gambar 2 */
+            background: #080a0d; 
             padding: 80px 8% 50px;
             border-top: 1px solid rgba(255,255,255,0.05);
         }
@@ -255,7 +255,6 @@
         }
         .social-box a:hover { background: var(--orange); transform: translateY(-3px); }
 
-        /* Baris Paling Bawah (Copyright Hitam Pekat sesuai Gambar 1) */
         .bottom-bar {
             background: #000000; 
             padding: 25px 8%;
@@ -305,7 +304,7 @@
             <h1 class="hero-title">Sinergi Membangun <br><span class="accent">Ekonomi Insan Kereta.</span></h1>
             <p class="hero-sub">Wadah gotong royong digital bagi seluruh pegawai KAI untuk mencapai kesejahteraan finansial yang berkelanjutan melalui pengelolaan dana yang profesional.</p>
             <div class="hero-actions">
-                <a href="#layanan" class="btn-main">Jelajahi Layanan <i class="fas fa-arrow-right"></i></a>
+                <a href="{{ route('login') }}" class="btn-main">Masuk Sekarang <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
     </section>

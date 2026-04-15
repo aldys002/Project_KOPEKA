@@ -53,7 +53,14 @@
         .title-section h1 { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 400; margin-bottom: 4px; }
         .title-section p { color: var(--muted); font-size: 15px; }
 
-        /* ── FILTERS ── */
+        /* ── ACTIONS (Filters & Export) ── */
+        .actions-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
         .filter-box { 
             display: flex; gap: 12px; background: #fafbfc; padding: 12px 20px; 
             border-radius: 16px; border: 1.5px solid var(--border); align-items: center;
@@ -61,6 +68,28 @@
         .form-select { 
             padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 10px; 
             font-family: inherit; font-size: 14px; outline: none; background: white; cursor: pointer;
+        }
+
+        /* TOMBOL EXCEL BARU */
+        .btn-export-excel {
+            background: var(--green);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+            border: none;
+            box-shadow: 0 4px 12px rgba(27, 164, 106, 0.2);
+        }
+        .btn-export-excel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(27, 164, 106, 0.3);
+            filter: brightness(1.1);
         }
 
         .search-container { margin-bottom: 24px; position: relative; max-width: 400px; }
@@ -111,7 +140,7 @@
             display: flex; align-items: center; justify-content: center; gap: 12px;
             box-shadow: 0 10px 20px rgba(0, 51, 160, 0.15);
         }
-        .btn-save:hover { background: var(--blue-dk); transform: translateY(-2px); }
+        .btn-save:hover { opacity: 0.9; transform: translateY(-2px); }
         
         .no-result { display: none; text-align: center; padding: 40px; color: var(--muted); font-style: italic; }
     </style>
@@ -130,24 +159,30 @@
                 <p>Input data simpanan dan cicilan anggota periode ini.</p>
             </div>
 
-            <div class="filter-box">
-                <i class="fas fa-calendar-alt" style="color: var(--blue);"></i>
-                <form action="{{ route('admin.laporan.bulanan') }}" method="GET" style="display: flex; gap: 8px;">
-                    <select name="bulan" class="form-select" onchange="this.form.submit()">
-                        @for($m=1; $m<=12; $m++)
-                            <option value="{{ $m }}" {{ (int)$bulanAktif == $m ? 'selected' : '' }}>
-                                {{ \Carbon\Carbon::create()->month((int)$m)->translatedFormat('F') }}
-                            </option>
-                        @endfor
-                    </select>
-                    <select name="tahun" class="form-select" onchange="this.form.submit()">
-                        @foreach(range(2025, date('Y') + 2) as $th)
-                            <option value="{{ $th }}" {{ (int)$tahunAktif == $th ? 'selected' : '' }}>
-                                {{ $th }}
-                            </option>
-                        @endforeach
-                    </select>
-                </form>
+            <div class="actions-wrapper">
+                <a href="{{ route('admin.export.simpanan', ['tahun' => $tahunAktif]) }}" class="btn-export-excel">
+                    <i class="fas fa-file-excel"></i> Export {{ $tahunAktif }}
+                </a>
+
+                <div class="filter-box">
+                    <i class="fas fa-calendar-alt" style="color: var(--blue);"></i>
+                    <form action="{{ route('admin.laporan.bulanan') }}" method="GET" style="display: flex; gap: 8px;">
+                        <select name="bulan" class="form-select" onchange="this.form.submit()">
+                            @for($m=1; $m<=12; $m++)
+                                <option value="{{ $m }}" {{ (int)$bulanAktif == $m ? 'selected' : '' }}>
+                                    {{ \Carbon\Carbon::create()->month((int)$m)->translatedFormat('F') }}
+                                </option>
+                            @endfor
+                        </select>
+                        <select name="tahun" class="form-select" onchange="this.form.submit()">
+                            @foreach(range(2025, date('Y') + 2) as $th)
+                                <option value="{{ $th }}" {{ (int)$tahunAktif == $th ? 'selected' : '' }}>
+                                    {{ $th }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
             </div>
         </div>
 

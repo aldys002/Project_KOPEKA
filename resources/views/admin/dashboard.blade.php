@@ -272,19 +272,19 @@
             
             <a href="{{ route('admin.anggota.index', ['tahun' => $tahunAktif]) }}" class="menu-card blue">
                 <div class="menu-icon"><i class="fas fa-users-viewfinder"></i></div>
-                <h2>Kelola Saldo Anggota</h2>
-                <p>Input simpanan rutin, kelola saldo awal, dan pantau histori transaksi simpan-pinjam setiap anggota secara detail.</p>
+                <h2>Manajemen & Saldo Anggota</h2>
+                <p>Kelola data profil, status keanggotaan, serta pantau rincian saldo simpanan dan hutang setiap anggota secara individu</p>
                 <div class="action-text">
-                    Buka Manajemen Saldo <i class="fas fa-arrow-right"></i>
+                     Manajemen Anggota dan Info Saldo <i class="fas fa-arrow-right"></i>
                 </div>
             </a>
 
             <a href="{{ route('admin.laporan.bulanan') }}" class="menu-card orange">
                 <div class="menu-icon"><i class="fas fa-file-invoice-dollar"></i></div>
-                <h2>Laporan Bulanan</h2>
-                <p>Lihat rekapitulasi transaksi bulanan secara massal, cetak laporan keuangan, dan ekspor data anggota untuk keperluan audit.</p>
+                <h2>Laporan Keuangan Bulanan</h2>
+                <p>Rekapitulasi data simpanan dan kewajiban seluruh anggota per periode untuk kebutuhan audit dan cetak laporan.</p>
                 <div class="action-text">
-                    Lihat Laporan Bulanan <i class="fas fa-arrow-right"></i>
+                    Input Laporan Bulanan <i class="fas fa-arrow-right"></i>
                 </div>
             </a>
 

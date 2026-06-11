@@ -123,7 +123,7 @@
 
         .hero-bg {
             position: absolute; inset: 0;
-            background: url("https://images.unsplash.com/photo-1532105956626-9569c03602f6?q=80&w=2000") center/cover no-repeat;
+            background: url("images/bglogin.jpeg") center/cover no-repeat;
         }
 
         .hero-bg::after {
@@ -283,10 +283,10 @@
 
     <nav class="navbar">
         <a class="navbar-brand-kai" href="#beranda">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Logo_PT_Kereta_Api_Indonesia_%28Persero%29_2020.svg" alt="Logo KAI">
+            <img src="images/bglogin.jpeg" alt="KOPEKA">
             <div class="brand-text">
                 <span class="main-title">KOPEKA</span>
-                <span class="sub-title">Rail Indonesia</span>
+                <span class="sub-title">Indonesia</span>
             </div>
         </a>
         <ul class="nav-links">
@@ -300,9 +300,9 @@
     <section class="hero" id="beranda">
         <div class="hero-bg"></div>
         <div class="hero-content" data-aos="fade-up">
-            <span class="hero-tag">Digitalisasi Koperasi Rail Indonesia</span>
-            <h1 class="hero-title">Sinergi Membangun <br><span class="accent">Ekonomi Insan Kereta.</span></h1>
-            <p class="hero-sub">Wadah gotong royong digital bagi seluruh pegawai KAI untuk mencapai kesejahteraan finansial yang berkelanjutan melalui pengelolaan dana yang profesional.</p>
+            <span class="hero-tag">Digitalisasi Koperasi Karyawan</span>
+            <h1 class="hero-title">Sinergi Membangun <br><span class="accent">Ekonomi.</span></h1>
+            <p class="hero-sub">Wadah gotong royong digital bagi seluruh karyawan untuk mencapai kesejahteraan finansial yang berkelanjutan melalui pengelolaan dana yang profesional.</p>
             <div class="hero-actions">
                 <a href="{{ route('login') }}" class="btn-main">Masuk Sekarang <i class="fas fa-arrow-right"></i></a>
             </div>
@@ -317,8 +317,8 @@
                 </div>
                 <div class="about-content" data-aos="fade-left">
                     <span class="section-label">Tentang Kami</span>
-                    <h2>Koperasi Pegawai PT KAI</h2>
-                    <p>KOPEKA hadir sebagai mitra finansial terpercaya bagi seluruh pegawai PT Kereta Api Indonesia (Persero) dengan menjunjung tinggi nilai integritas.</p>
+                    <h2>Koperasi Karyawan</h2>
+                    <p>KOPEKA hadir sebagai mitra finansial terpercaya bagi seluruh Karyawan Indonesia dengan menjunjung tinggi nilai integritas.</p>
                     <div style="display: flex; gap: 30px; margin-top: 30px;">
                         <div><h4 style="color: var(--orange); font-size: 1.5rem;">20+</h4><p style="font-size: 0.8rem;">Tahun Melayani</p></div>
                         <div><h4 style="color: var(--orange); font-size: 1.5rem;">100%</h4><p style="font-size: 0.8rem;">Transparansi</p></div>
@@ -349,7 +349,7 @@
                 <div class="card" data-aos="fade-up" data-aos-delay="300">
                     <div class="card-icon"><i class="fas fa-shopping-bag"></i></div>
                     <h3 class="card-title">C-Corner & Atribut</h3>
-                    <p class="card-text">Pusat penyediaan atribut resmi KAI (Lanyard, Seragam, Pin) dengan sistem pembayaran payroll yang praktis.</p>
+                    <p class="card-text">Menyediakan Kebutuhan Seperti (Sembako, ATK, DLL) dengan sistem pembayaran payroll yang praktis.</p>
                 </div>
             </div>
         </div>
@@ -360,7 +360,7 @@
             <div class="footer-col" data-aos="fade-up">
                 <h4>Koperasi <span style="color:var(--orange)">KOPEKA</span></h4>
                 <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">
-                    Membangun ekonomi anggota dengan integritas dan inovasi digital untuk masa depan insan KAI yang lebih baik.
+                    Membangun ekonomi anggota dengan integritas dan inovasi digital untuk masa depan insan yang lebih baik.
                 </p>
                 <div class="social-box">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -381,7 +381,7 @@
             <div class="footer-col" data-aos="fade-up" data-aos-delay="200">
                 <h4>Official Info</h4>
                 <ul class="footer-info-list">
-                    <li><i class="fas fa-map-marker-alt"></i> Jl. Lempuyangan, Bausasran, Danurejan, Kota Yogyakarta, Daerah Istimewa Yogyakarta</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Kasihan Kota Bantul, Daerah Istimewa Yogyakarta</li>
                     <li><i class="fas fa-phone-alt"></i> (022) 1234 5678</li>
                     <li><i class="fas fa-envelope"></i> admin@kopeka-rail.co.id</li>
                 </ul>

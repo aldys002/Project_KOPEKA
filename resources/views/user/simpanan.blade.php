@@ -561,7 +561,7 @@
     <nav class="navbar">
         <div class="container">
             <a class="navbar-brand-kai" href="#">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Logo_PT_Kereta_Api_Indonesia_%28Persero%29_2020.svg" alt="Logo KAI">
+                <img src="images/bglogin.jpeg" alt="KOPEKA">
                 <div class="brand-divider"></div>
                 <div class="brand-text">
                     <span class="main-title">KOPEKA</span>

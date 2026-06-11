@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin — KOPEKA KAI Daop 6 Yogyakarta</title>
+    <title>Dashboard Admin — KOPEKA Yogyakarta</title>
     
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -197,7 +197,7 @@
     <header class="top-bar">
         <a href="#" class="logo-lockup">
             <div class="kai-circle">
-                <span>KAI</span>
+                <span>KOPEKA</span>
                 <div class="bar"></div>
             </div>
             <div class="logo-text">
@@ -230,7 +230,7 @@
     <main class="container">
         <div class="welcome-header">
             <h1>Dashboard <em>Admin</em></h1>
-            <p>Manajemen data operasional KOPEKA Daop 6 Yogyakarta — Periode Buku {{ $tahunAktif }}</p>
+            <p>Manajemen data operasional KOPEKA Yogyakarta — Periode Buku {{ $tahunAktif }}</p>
         </div>
 
         <div class="stats-grid">

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login Admin — KOPEKA KAI Daop 6 Yogyakarta</title>
+<title>Login Admin — KOPEKA </title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,7 +44,7 @@
   .bg-full {
     position: fixed;
     inset: 0;
-    background-image: url("{{ asset('images/kereta.jpeg') }}");
+    background-image: url("{{ asset('images/bglogin.jpeg') }}");
     background-size: cover;
     background-position: center center;
     z-index: 0;
@@ -671,17 +671,17 @@
 <header class="top-bar">
   <div class="logo-lockup">
     <div class="kai-circle">
-      <span>KAI</span>
+      <span>KOPEKA</span>
       <div class="bar"></div>
     </div>
     <div class="logo-text">
       <span class="name">KOPEKA</span>
-      <span class="sub">Koperasi Karyawan KAI</span>
+      <span class="sub">Koperasi Karyawan</span>
     </div>
   </div>
   <div class="top-bar-right">
-    <strong>PT Kereta Api Indonesia (Persero)</strong>
-    Daerah Operasi 6 Yogyakarta
+    <strong>PT KOPEKA</strong>
+    YOGYAKARTA
   </div>
 </header>
 
@@ -690,11 +690,11 @@
 
   <div class="above-tag">
     <span class="dot-pulse"></span>
-    Portal Admin · Daop 6 Yogyakarta
+    Portal Admin ·
   </div>
 
   <div class="card">
-    <div class="card-watermark">KAI</div>
+    <div class="card-watermark">K</div>
 
     <div class="card-header">
       <div class="card-titles">
@@ -769,9 +769,9 @@
 
     <div class="form-footer">
       <div class="form-footer-info">
-        <span>KOPEKA KAI</span>
+        <span>KOPEKA </span>
         <div class="dot"></div>
-        <span>Daop 6 Yogyakarta</span>
+        <span> Yogyakarta</span>
         <div class="dot"></div>
         <span>&copy; {{ date('Y') }}</span>
       </div>

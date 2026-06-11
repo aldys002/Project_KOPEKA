@@ -27,7 +27,7 @@
                         <div class="logo-section">
                             <i class="fas fa-train fa-3x text-kai mb-2"></i>
                             <h4 class="fw-bold text-kai mb-0">Login Anggota</h4>
-                            <p class="text-muted small">Koperasi Karyawan Rail Indonesia</p>
+                            <p class="text-muted small">Koperasi Karyawan Indonesia</p>
                         </div>
                         
                         <hr class="mb-4 opacity-50">

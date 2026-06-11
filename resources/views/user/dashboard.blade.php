@@ -154,7 +154,7 @@
         .hero-bg-photo {
             position: absolute;
             inset: 0;
-            background: url("https://images.unsplash.com/photo-1532105956626-9569c03602f6?q=80&w=2000") center/cover;
+            background: url("images/bglogin.jpeg") center/cover;
             opacity: 0.18;
         }
 
@@ -524,7 +524,7 @@
     <nav class="navbar">
         <div class="container">
             <a class="navbar-brand-kai" href="#">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/56/Logo_PT_Kereta_Api_Indonesia_%28Persero%29_2020.svg" alt="Logo KAI">
+                <img src="images/bglogin.jpeg" alt="KOPEKA">
                 <div class="brand-divider"></div>
                 <div class="brand-text">
                     <span class="main-title">KOPEKA</span>
@@ -637,7 +637,7 @@
                 <div class="sync-dot"></div>
                 <div class="sync-text">
                     <h6>Sinkronisasi Real-Time</h6>
-                    <p>Data keuangan diperbarui otomatis dari sistem pusat Koperasi Rail Indonesia.</p>
+                    <p>Data keuangan diperbarui otomatis dari sistem pusat Koperasi Karyawan Indonesia.</p>
                 </div>
                 <span class="sync-badge">Live</span>
             </div>

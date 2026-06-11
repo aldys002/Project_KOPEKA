@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aktivasi Anggota - KOPEKA RAIL</title>
+    <title>Aktivasi Anggota - KOPEKA </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -32,7 +32,7 @@
                     <div class="card-header-kai">
                         <i class="fas fa-user-shield fa-3x mb-3"></i>
                         <h4 class="mb-0 fw-bold">Aktivasi Akun Anggota</h4>
-                        <p class="small mb-0 opacity-75">Koperasi Pegawai Kereta Api (KOPEKA)</p>
+                        <p class="small mb-0 opacity-75">Koperasi Karyawan (KOPEKA)</p>
                     </div>
                     <div class="card-body p-4 p-md-5 bg-white">
                         
@@ -48,7 +48,7 @@
                             @csrf 
 
                             <div class="mb-3">
-                                <label class="form-label small fw-bold text-uppercase">Nama Lengkap (Sesuai Data Koperasi)</label>
+                                <label class="form-label small fw-bold text-uppercase">Nama Lengkap </label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-user text-muted"></i></span>
                                     <input type="text" name="nama_anggota" class="form-control @error('nama_anggota') is-invalid @enderror" 

@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # Service 1: Aplikasi Laravel
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: kopeka-app
+    container_name: kopeka-laravel
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+    volumes:
+      - .:/var/www
+    networks:
+      - kopeka-network
+
+  # Service 2: Web Server (Nginx)
+  webserver:
+    image: nginx:alpine
+    container_name: kopeka-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - kopeka-network
+    depends_on:
+      - app
+
+  # Service 3: Database MySQL
+  db:
+    image: mysql:8.0
+    container_name: kopeka-db
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - kopeka-network
+
+networks:
+  kopeka-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
